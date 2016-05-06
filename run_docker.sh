@@ -29,7 +29,3 @@ docker run -t --privileged -d -p 8080:8080 \
 	$DOCKER_USER/maproulette2:$DOCKER_VERSION
 
 docker ps
-
-echo "IP: $(docker inspect --format '{{ .NetworkSettings.IPAddress }}' maproulette2)"
-echo "If running on OS X, with boot2docker, make sure to create a nat rule to be able to connect through the virtual box VM"
-echo "VBoxManage controlvm boot2docker-vm natpf1 \"maproulette2,tcp,127.0.0.1,8080,,8080\""

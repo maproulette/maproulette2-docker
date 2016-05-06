@@ -5,20 +5,32 @@ Docker image for Map Roulette 2. This tool creates both a map roulette image and
 
 ### Setting up Configuration
 
-There are a couple of required properties that you will need to setup prior to running the docker.sh shell script. These settings can be set as system properties:
+There are a couple of required properties that you will need to setup prior to running the docker.sh shell script. These settings need to be updated in the docker.conf file, look for the "CHANGE_ME" fields.
 
-1. MAPROULETTE_DB_URL - This is the location of the database. You shouldn't need to set this as the URL is automatically set for you by the docker.conf file. 
-2. MAPROULETTE_CONSUMER_KEY - This is the consumer key for your MapRoulette application in your openstreetmap.org account. This can be set by setting the value as a system property, or alternatively it can be modified in the docker.conf file, by modifying the variable osm.consumerKey
-3. MAPROULETTE_CONSUMER_SECRET - This is the consumer secret that is found in the same MapRoulette application settings as is the consumer key. Like all the above variables they can be set through a system property or alternatively modified in the docker.conf file.
+1. MAPROULETTE_DB_URL - This is the location of the database. This is set to the linked postgres docker container, so doesn't need to be explicitly set unless using a different database.
+2. MAPROULETTE_CONSUMER_KEY - This is the consumer key for your MapRoulette application in your openstreetmap.org account. 
+3. MAPROULETTE_CONSUMER_SECRET - This is the consumer secret that is found in the same MapRoulette application settings as is the consumer key. 
 
-The settings below are useful properties that can be modified in the docker.conf
+Other properties that are useful to know about.
 
 * maproulette.super.key - This is the api key that can be used for any API requests and the server will assume that the person making the request is a super user. No requirement to login.
 * maproulette.super.accounts - This is a comma separated list of OSM account ids that will be elevated to super user access when they login. 
 
 ### Running docker.sh
 
-To create the MapRoulette and Postgis docker instance you just need to execute the docker.sh script. This will build the two instances and link them together. By default the Map Roulette service will start up on port 8080, however this is configurable simply by passing in the port number to the docker script. eg. `docker.sh 9000`
+To create the MapRoulette and Postgis docker instance you just need to execute the docker.sh script. This will build the two instances and link them together. By default the Map Roulette service will start up on port 8080, if you need to change this you will need to change the port in the following places:
+
+* Dockerfile line 13
+* run_docker.sh line 26
+* setupServer.sh line 14
+
+### Deploying to Open stack
+
+Running docker.sh will deploy the containers locally and will require the user to have VirtualBox setup correctly. Alternatively you can run deploy_openstack.sh and deploy the containers to an OpenStack environment. The most important thing that this requires is that you have your Keystone credentials sourced into your environment. Please refer to your openstack documentation for information about your keystone credentials and where to get them. Other than that you will need to edit the deploy_openstack.sh file lines 6 through 14 which contain properties for the image that you want to create for your containers. 
+
+### Deploying to other environments
+
+You can create your own shell scripts to deploy to various other environments as well, please refer to the docker documentation [https://docs.docker.com/machine/drivers/](here). If you do create your own scripts please don't hesistate to create a PR into this repo.
 
 # Thanks
 
