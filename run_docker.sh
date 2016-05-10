@@ -1,5 +1,11 @@
 #!/bin/bash
-DOCKER_VERSION=1.0.0
+# environment variables that can be set
+if [ -z "$DOCKER_VERSION" ]; then
+	DOCKER_VERSION=1.0.0	
+fi
+if [ -z "$DOCKER_USER" ]; then
+	DOCKER_USER="DEFAULT_USER"
+fi
 #This line gets the latest commit hash to use as the cachebust, when it changes the 
 #it will break the cache on the line just before we pull the code. So that it won't use
 #the cache and instead will pull the latest and repackage
@@ -23,7 +29,7 @@ sleep 10
 
 docker stop maproulette2
 docker rm maproulette2
-docker run -t --privileged -d -p 8080:8080 \
+docker run -t --privileged -d -p 80:80 \
 	--name maproulette2 \
 	--link mr2-postgis:db \
 	$DOCKER_USER/maproulette2:$DOCKER_VERSION

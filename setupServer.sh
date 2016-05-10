@@ -11,7 +11,7 @@ if [ -z "$MAPROULETTE_CONSUMER_SECRET" ]; then
 fi	
 port=$1
 if [ -z "$port" ]; then
-	port="8080"
+	port="80"
 fi
 
 /maproulettev2-1.0/bin/maproulettev2 -Dhttp.port=$port -Dconfig.resource=docker.conf \

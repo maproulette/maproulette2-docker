@@ -7,9 +7,10 @@ Docker image for Map Roulette 2. This tool creates both a map roulette image and
 
 There are a couple of required properties that you will need to setup prior to running the docker.sh shell script. These settings need to be updated in the docker.conf file, look for the "CHANGE_ME" fields.
 
-1. MAPROULETTE_DB_URL - This is the location of the database. This is set to the linked postgres docker container, so doesn't need to be explicitly set unless using a different database.
-2. MAPROULETTE_CONSUMER_KEY - This is the consumer key for your MapRoulette application in your openstreetmap.org account. 
-3. MAPROULETTE_CONSUMER_SECRET - This is the consumer secret that is found in the same MapRoulette application settings as is the consumer key. 
+* DOCKER_USER - This is the username of the user setting up the docker images, if not supplied will default to "DEFAULT_USER"
+* MAPROULETTE_DB_URL - This is the location of the database. This is set to the linked postgres docker container, so doesn't need to be explicitly set unless using a different database.
+* MAPROULETTE_CONSUMER_KEY - This is the consumer key for your MapRoulette application in your openstreetmap.org account. 
+* MAPROULETTE_CONSUMER_SECRET - This is the consumer secret that is found in the same MapRoulette application settings as is the consumer key. 
 
 Other properties that are useful to know about.
 
@@ -18,7 +19,7 @@ Other properties that are useful to know about.
 
 ### Running docker.sh
 
-To create the MapRoulette and Postgis docker instance you just need to execute the docker.sh script. This will build the two instances and link them together. By default the Map Roulette service will start up on port 8080, if you need to change this you will need to change the port in the following places:
+To create the MapRoulette and Postgis docker instance you just need to execute the docker.sh script. This will build the two instances and link them together. By default the Map Roulette service will start up on port 80, if you need to change this you will need to change the port in the following places:
 
 * Dockerfile line 13
 * run_docker.sh line 26
