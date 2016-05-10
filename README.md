@@ -19,7 +19,7 @@ Other properties that are useful to know about.
 
 ### Running docker.sh
 
-To create the MapRoulette and Postgis docker instance you just need to execute the docker.sh script. This will build the two instances and link them together. By default the Map Roulette service will start up on port 8080, if you need to change this you will need to change the port in the following places:
+To create the MapRoulette and Postgis docker instance you just need to execute the docker.sh script. This will build the two instances and link them together. By default the Map Roulette service will start up on port 80, if you need to change this you will need to change the port in the following places:
 
 * Dockerfile line 13
 * run_docker.sh line 26
