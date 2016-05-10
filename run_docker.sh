@@ -23,7 +23,7 @@ sleep 10
 
 docker stop maproulette2
 docker rm maproulette2
-docker run -t --privileged -d -p 8080:8080 \
+docker run -t --privileged -d -p 80:80 \
 	--name maproulette2 \
 	--link mr2-postgis:db \
 	$DOCKER_USER/maproulette2:$DOCKER_VERSION
