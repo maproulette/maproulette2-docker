@@ -4,7 +4,7 @@ if [ -z "$DOCKER_VERSION" ]; then
 	DOCKER_VERSION=1.0.0	
 fi
 if [ -z "$DOCKER_USER" ]; then
-	DOCKER_USER="DEFAULT_USER"
+	DOCKER_USER="maproulette"
 fi
 #This line gets the latest commit hash to use as the cachebust, when it changes the 
 #it will break the cache on the line just before we pull the code. So that it won't use

@@ -7,7 +7,7 @@ Docker image for Map Roulette 2. This tool creates both a map roulette image and
 
 There are a couple of required properties that you will need to setup prior to running the docker.sh shell script. These settings need to be updated in the docker.conf file, look for the "CHANGE_ME" fields.
 
-* DOCKER_USER - This is the username of the user setting up the docker images, if not supplied will default to "DEFAULT_USER"
+* DOCKER_USER - This is the username of the user setting up the docker images, if not supplied will default to "maproulette"
 * MAPROULETTE_DB_URL - This is the location of the database. This is set to the linked postgres docker container, so doesn't need to be explicitly set unless using a different database.
 * MAPROULETTE_CONSUMER_KEY - This is the consumer key for your MapRoulette application in your openstreetmap.org account. 
 * MAPROULETTE_CONSUMER_SECRET - This is the consumer secret that is found in the same MapRoulette application settings as is the consumer key. 
