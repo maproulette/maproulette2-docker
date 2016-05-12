@@ -2,6 +2,10 @@
 # This script will initialize the open stack docker-machine
 # Source your keystone credentials, so that the environment variables are present, otherwise this will fail.
 # See https://docs.docker.com/machine/drivers/openstack/ for more information
+INSTANCE_NAME="MapRoulette2"
+if [ -n "$1" ]; then
+	INSTANCE_NAME="$1"
+fi
 docker-machine create --driver openstack\
  --openstack-ssh-user ubuntu\
  --openstack-image-name ubuntu_15.10\
@@ -12,13 +16,15 @@ docker-machine create --driver openstack\
  --openstack-private-key-file [CHANGE_ME]\
  --openstack-availability-zone common\
  --openstack-net-name [CHANGE_ME]\
- MapRoulette2
+ $INSTANCE_NAME
 
-status=$(docker-machine status MapRoulette2)
+status=$(docker-machine status $INSTANCE_NAME)
 if [ "$status" != "Running" ]; then
-	docker-machine start MapRoulette2
+	docker-machine start $INSTANCE_NAME
 fi
-docker-machine env MapRoulette2
-eval "$(docker-machine env MapRoulette2)"
+docker-machine env $INSTANCE_NAME
+eval "$(docker-machine env $INSTANCE_NAME)"
 
+export locally=false
+export rpg=false
 ./run_docker.sh
