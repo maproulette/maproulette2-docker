@@ -13,22 +13,32 @@ export CACHEBUST=`git ls-remote https://github.com/maproulette/maproulette2.git 
 docker build -t $DOCKER_USER/maproulette2:$DOCKER_VERSION --build-arg CACHEBUST=$CACHEBUST .
 
 # Run it locally. Optional
-if [ "$1" == "true" ]; then
+if [ "$locally" == true ]; then
+	echo "Removing docker images locally"
 	docker rm -f `docker ps --no-trunc -aq`
 fi
 
-docker stop mr2-postgis
-docker rm mr2-postgis
-docker run --name mr2-postgis \
-	-e POSTGRES_DB=mr2_prod \
-	-e POSTGRES_USER=mr2dbuser \
-	-e POSTGRES_PASSWORD=mr2dbpassword \
-	-d mdillon/postgis
+if [ "$rpg" == true ]; then
+	echo "Stopping and removing mr2-postgis container"
+	docker stop mr2-postgis
+	docker rm mr2-postgis
+fi
 
-sleep 10
+instanceRunning=$(docker ps | grep mdillon/postgis)
+if [ -z "$instanceRunning" ]; then
+	echo "Restarting mr2-postgis container"
+	docker run --name mr2-postgis \
+		-e POSTGRES_DB=mr2_prod \
+		-e POSTGRES_USER=mr2dbuser \
+		-e POSTGRES_PASSWORD=mr2dbpassword \
+		-d mdillon/postgis
+	sleep 10
+fi
 
+echo "Stopping and removing maproulette2 container"
 docker stop maproulette2
 docker rm maproulette2
+echo "Restarting maproulette2 container"
 docker run -t --privileged -d -p 80:80 \
 	--name maproulette2 \
 	--link mr2-postgis:db \

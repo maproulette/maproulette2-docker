@@ -7,4 +7,6 @@ fi
 docker-machine env default
 eval "$(docker-machine env default)"
 
-./run_docker.sh true
+export locally=true
+export rpg=false
+./run_docker.sh
