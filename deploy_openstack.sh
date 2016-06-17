@@ -25,6 +25,5 @@ fi
 docker-machine env $INSTANCE_NAME
 eval "$(docker-machine env $INSTANCE_NAME)"
 
-export locally=false
 export rpg=false
 ./run_docker.sh
