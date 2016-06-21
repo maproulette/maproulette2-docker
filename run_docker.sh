@@ -12,12 +12,6 @@ fi
 export CACHEBUST=`git ls-remote https://github.com/maproulette/maproulette2.git | grep HEAD | cut -f 1`
 docker build -t $DOCKER_USER/maproulette2:$DOCKER_VERSION --build-arg CACHEBUST=$CACHEBUST .
 
-# Run it locally. Optional
-if [ "$locally" == true ]; then
-	echo "Removing docker images locally"
-	docker rm -f `docker ps --no-trunc -aq`
-fi
-
 if [ "$rpg" == true ]; then
 	echo "Stopping and removing mr2-postgis container"
 	docker stop mr2-postgis
