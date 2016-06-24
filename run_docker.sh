@@ -1,22 +1,16 @@
 #!/bin/bash
 # environment variables that can be set
 if [ -z "$DOCKER_VERSION" ]; then
-	DOCKER_VERSION=1.0.0	
+	DOCKER_VERSION=1.0.0
 fi
 if [ -z "$DOCKER_USER" ]; then
 	DOCKER_USER="maproulette"
 fi
-#This line gets the latest commit hash to use as the cachebust, when it changes the 
+#This line gets the latest commit hash to use as the cachebust, when it changes the
 #it will break the cache on the line just before we pull the code. So that it won't use
 #the cache and instead will pull the latest and repackage
 export CACHEBUST=`git ls-remote https://github.com/maproulette/maproulette2.git | grep HEAD | cut -f 1`
 docker build -t $DOCKER_USER/maproulette2:$DOCKER_VERSION --build-arg CACHEBUST=$CACHEBUST .
-
-# Run it locally. Optional
-if [ "$locally" == true ]; then
-	echo "Removing docker images locally"
-	docker rm -f `docker ps --no-trunc -aq`
-fi
 
 if [ "$rpg" == true ]; then
 	echo "Stopping and removing mr2-postgis container"
