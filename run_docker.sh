@@ -12,7 +12,7 @@ fi
 export CACHEBUST=`git ls-remote https://github.com/maproulette/maproulette2.git | grep HEAD | cut -f 1`
 docker build -t $DOCKER_USER/maproulette2:$DOCKER_VERSION --build-arg CACHEBUST=$CACHEBUST .
 
-if [ "$rpg" == true ]; then
+if [ "$wipe_db" == true ]; then
 	echo "Stopping and removing mr2-postgis container"
 	docker stop mr2-postgis
 	docker rm mr2-postgis
