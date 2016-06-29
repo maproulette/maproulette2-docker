@@ -7,5 +7,5 @@ fi
 docker-machine env default
 eval "$(docker-machine env default)"
 
-export rpg=false
+export wipe_db=false
 ./run_docker.sh
