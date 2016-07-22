@@ -15,7 +15,7 @@ EXPOSE 80
 ARG CACHEBUST=1
 RUN echo $CACHEBUST
 # Download Maproulette V2
-RUN git clone https://github.com/mgcuthbert/maproulette2.git
+RUN git clone https://github.com/maproulette/maproulette2.git
 RUN chmod 777 /maproulette2
 WORKDIR /maproulette2
 
