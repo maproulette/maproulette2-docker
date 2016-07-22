@@ -24,8 +24,6 @@ RUN sbt clean compile dist
 RUN unzip -d / target/universal/MapRouletteV2.zip
 WORKDIR /MapRouletteV2
 
-ARG CACHEBUST=1
-RUN echo $CACHEBUST
 # Bootstrap commands
 ADD bootstrap.sh /etc/bootstrap.sh
 ADD setupServer.sh /MapRouletteV2/setupServer.sh
