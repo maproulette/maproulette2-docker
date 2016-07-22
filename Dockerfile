@@ -21,14 +21,14 @@ WORKDIR /maproulette2
 
 # package Maproulette V2
 RUN sbt clean compile dist
-RUN unzip -d / target/universal/maproulettev2-1.0.zip
-WORKDIR /maproulettev2-1.0
+RUN unzip -d / target/universal/MapRouletteV2.zip
+WORKDIR /MapRouletteV2
 
 # Bootstrap commands
 ADD bootstrap.sh /etc/bootstrap.sh
-ADD setupServer.sh /maproulettev2-1.0/setupServer.sh
-ADD docker.conf	/maproulettev2-1.0/conf/docker.conf
+ADD setupServer.sh /MapRouletteV2/setupServer.sh
+ADD docker.conf	/MapRouletteV2/conf/docker.conf
 RUN chmod 777 /etc/bootstrap.sh
-RUN chmod 777 /maproulettev2-1.0/setupServer.sh
+RUN chmod 777 /MapRouletteV2/setupServer.sh
 
 ENTRYPOINT ["/etc/bootstrap.sh"]
