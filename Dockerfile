@@ -20,9 +20,26 @@ RUN chmod 777 /maproulette2
 WORKDIR /maproulette2
 
 # package Maproulette V2
-RUN sbt clean compile dist
+RUN export API_HOST=maproulette.org;sbt clean compile dist
 RUN unzip -d / target/universal/MapRouletteV2.zip
 WORKDIR /MapRouletteV2
+
+# Install Yarn and Nodejs
+RUN curl -sL https://deb.nodesource.com/setup_9.x | bash -
+RUN apt-get install -y nodejs
+RUN curl -o- -L https://yarnpkg.com/install.sh | bash
+
+# Download Maproulette Frontend
+RUN git clone git@github.com:maproulette/maproulette3.git /maproulette-frontend
+RUN chmod 755 /maproulette-frontend
+ADD .env.production /maproulette-frontend/.env.production
+
+# Build the Maproulette Frontend
+WORKDIR /maproulette-frontend
+RUN export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH";yarn install
+RUN export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH";yarn run build
+RUN mkdir /MapRouletteV2/static/
+RUN cp -rf /maproulette-frontend/build/* /MapRouletteV2/static/
 
 # Bootstrap commands
 ADD bootstrap.sh /etc/bootstrap.sh
@@ -30,5 +47,6 @@ ADD setupServer.sh /MapRouletteV2/setupServer.sh
 ADD docker.conf	/MapRouletteV2/conf/docker.conf
 RUN chmod 777 /etc/bootstrap.sh
 RUN chmod 777 /MapRouletteV2/setupServer.sh
+WORKDIR /MapRouletteV2
 
 ENTRYPOINT ["/etc/bootstrap.sh"]

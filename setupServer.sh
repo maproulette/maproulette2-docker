@@ -15,6 +15,7 @@ if [ -z "$port" ]; then
 fi
 
 /MapRouletteV2/bin/maproulettev2 -Dhttp.port=$port -Dconfig.resource=docker.conf \
+	-DAPI_HOST='maproulette.org' \
 	-DMR_DATABASE_URL=$MAPROULETTE_DB_URL \
 	-DMR_CONSUMER_KEY=$MAPROULETTE_CONSUMER_KEY \
 	-DMR_CONSUMER_SECRET=$MAPROULETTE_CONSUMER_SECRET \
