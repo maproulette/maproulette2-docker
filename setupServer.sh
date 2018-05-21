@@ -19,4 +19,6 @@ fi
 	-DMR_DATABASE_URL=$MAPROULETTE_DB_URL \
 	-DMR_CONSUMER_KEY=$MAPROULETTE_CONSUMER_KEY \
 	-DMR_CONSUMER_SECRET=$MAPROULETTE_CONSUMER_SECRET \
-	-DMR_SUPER_ACCOUNTS=8909
+	-DMR_SUPER_ACCOUNTS=8909 \
+	-Djavax.net.ssl.trustStore=/MapRouletteV2/conf/osmcacerts \
+	-Djavax.net.ssl.trustStorePassword=openstreetmap
