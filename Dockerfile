@@ -12,6 +12,10 @@ RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 642AC823
 RUN apt-get update && apt-get upgrade -y && apt-get install -y scala sbt unzip wget git openssh-server
 EXPOSE 80
 
+# Retrieve OSM Certificate
+RUN openssl s_client -showcerts -connect "www.openstreetmap.org:443" -servername www.openstreetmap.org </dev/null | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > osm.pem
+RUN keytool -importcert -noprompt -trustcacerts -alias www.openstreetmap.org -file osm.pem -keystore osmcacerts -storepass openstreetmap
+
 ARG CACHEBUST=1
 RUN echo $CACHEBUST
 # Download Maproulette V2
@@ -50,5 +54,7 @@ ADD docker.conf	/MapRouletteV2/conf/docker.conf
 RUN chmod 777 /etc/bootstrap.sh
 RUN chmod 777 /MapRouletteV2/setupServer.sh
 WORKDIR /MapRouletteV2
+# Move the truststore to the correct location
+RUN mv /osmcacerts conf/
 
 ENTRYPOINT ["/etc/bootstrap.sh"]
