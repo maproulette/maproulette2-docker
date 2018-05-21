@@ -36,7 +36,7 @@ RUN curl -o- -L https://yarnpkg.com/install.sh | bash
 ARG FRONTCACHEBUST=1
 RUN echo $FRONTCACHEBUST
 # Download Maproulette Frontend
-RUN git clone https://github.com/maproulette/maproulette3.git /maproulette-frontend
+RUN git clone https://github.com/osmlab/maproulette3.git /maproulette-frontend
 RUN chmod 755 /maproulette-frontend
 ADD .env.production /maproulette-frontend/.env.production
 
