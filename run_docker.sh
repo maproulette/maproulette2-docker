@@ -10,7 +10,7 @@ fi
 #it will break the cache on the line just before we pull the code. So that it won't use
 #the cache and instead will pull the latest and repackage
 export CACHEBUST=`git ls-remote https://github.com/maproulette/maproulette2.git | grep HEAD | cut -f 1`
-export FRONTCACHEBUST=`git ls-remote https://github.com/maproulette/maproulette3.git | grep HEAD | cut -f 1`
+export FRONTCACHEBUST=`git ls-remote https://github.com/osmlab/maproulette3.git | grep HEAD | cut -f 1`
 docker build -t $DOCKER_USER/maproulette2:$DOCKER_VERSION --build-arg CACHEBUST=$CACHEBUST --build-arg FRONTCACHEBUST=$FRONTCACHEBUST .
 
 if [ "$wipe_db" == true ]; then
