@@ -12,10 +12,6 @@ RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 642AC823
 RUN apt-get update && apt-get upgrade -y && apt-get install -y scala sbt unzip wget git openssh-server
 EXPOSE 80
 
-# Retrieve OSM Certificate
-RUN openssl s_client -showcerts -connect "www.openstreetmap.org:443" -servername www.openstreetmap.org </dev/null | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > osm.pem
-RUN keytool -importcert -noprompt -trustcacerts -alias www.openstreetmap.org -file osm.pem -keystore osmcacerts -storepass openstreetmap
-
 ARG CACHEBUST=1
 RUN echo $CACHEBUST
 # Download Maproulette V2
@@ -46,6 +42,11 @@ RUN export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PA
 RUN export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH";yarn run build
 RUN mkdir /MapRouletteV2/static/
 RUN cp -rf /maproulette-frontend/build/* /MapRouletteV2/static/
+
+# Retrieve OSM Certificate
+WORKDIR /
+RUN openssl s_client -showcerts -connect "www.openstreetmap.org:443" -servername www.openstreetmap.org </dev/null | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > osm.pem
+RUN keytool -importcert -noprompt -trustcacerts -alias www.openstreetmap.org -file osm.pem -keystore osmcacerts -storepass openstreetmap
 
 # Bootstrap commands
 ADD bootstrap.sh /etc/bootstrap.sh
