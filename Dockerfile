@@ -43,9 +43,11 @@ RUN export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PA
 RUN mkdir /MapRouletteV2/static/
 RUN cp -rf /maproulette-frontend/build/* /MapRouletteV2/static/
 
-# Retrieve OSM Certificate
+# Retrieve OSM & Mapillary Certificates
 WORKDIR /
 RUN openssl s_client -showcerts -connect "www.openstreetmap.org:443" -servername www.openstreetmap.org </dev/null | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > osm.pem
+RUN openssl s_client -showcerts -connect "a.mapillary.com:443" -servername a.mapillary.com </dev/null | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > mapillary.pem
+RUN keytool -importcert -noprompt -trustcacerts -alias a.mapillary.com -file mapillary.pem -keystore osmcacerts -storepass openstreetmap
 RUN keytool -importcert -noprompt -trustcacerts -alias www.openstreetmap.org -file osm.pem -keystore osmcacerts -storepass openstreetmap
 
 # Bootstrap commands
