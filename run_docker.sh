@@ -19,9 +19,9 @@ if [ "$wipe_db" == true ]; then
 	docker rm mr2-postgis
 fi
 
-instanceRunning=$(docker ps | grep mdillon/postgis)
-if [ -z "$instanceRunning" ]; then
-	echo "Restarting mr2-postgis container"
+instance=$(docker ps -a | grep mdillon/postgis)
+if [ -z "$instance" ]; then
+	echo "Building new mr2-postgis container"
 	docker run --name mr2-postgis \
 		-e POSTGRES_DB=mr2_prod \
 		-e POSTGRES_USER=mr2dbuser \
@@ -29,11 +29,16 @@ if [ -z "$instanceRunning" ]; then
 		-d mdillon/postgis
 	sleep 10
 fi
+instance=$(docker ps | grep mdillon/postgis)
+if [ -z "$instance" ]; then
+	echo "Restarting mr2-postgis container"
+	docker start mr2-postgis
+fi
 
 echo "Stopping and removing maproulette2 container"
 docker stop maproulette2
 docker rm maproulette2
-echo "Restarting maproulette2 container"
+echo "Building maproulette2 container"
 docker run -t --privileged -d -p 80:80 \
 	--name maproulette2 \
 	--link mr2-postgis:db \
