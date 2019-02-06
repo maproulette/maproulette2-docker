@@ -4,7 +4,7 @@ echo "bootstrap"
 
 service ssh restart
 
-cd /maproulettev2-1.0
+cd /MapRouletteV2
 
 ./setupServer.sh > setupServer.log 2>&1
 
