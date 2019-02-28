@@ -1,5 +1,5 @@
 upstream api {
-    server host.docker.internal:9000;
+    server api:9000;
 }
 server {
     listen 80 default_server;
