@@ -26,7 +26,6 @@ if [[ $? -eq 0 ]]; then
   docker stop maproulette-frontend || true && docker rm maproulette-frontend || true
 fi
 
-backe
 echo "Starting maproulette frontend container"
 docker run -t --privileged -d -p 3000:80 \
 	--name maproulette-frontend ${apiLink} \
