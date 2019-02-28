@@ -100,5 +100,5 @@ if [[ "$api" = true ]]; then
 fi
 if [[ "$frontend" = true ]]; then
     echo "deploying frontend..."
-    ./frontend/docker.sh $frontendRelease $frontendGit
+    ./frontend/docker.sh $frontendRelease $frontendGit $api
 fi
