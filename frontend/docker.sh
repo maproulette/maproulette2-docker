@@ -6,6 +6,10 @@ fi
 export VERSION=${VERSION}
 git=(${2//:/ })
 CACHEBUST=${VERSION}
+apiLink=""
+if [[ "$3" != true ]]; then
+    apiLink="--link maproulette-api:api"
+fi
 
 cd frontend
 if [[ "$VERSION" = "LATEST" ]]; then
@@ -24,7 +28,6 @@ fi
 
 echo "Starting maproulette frontend container"
 docker run -t --privileged -d -p 3000:80 \
-	--name maproulette-frontend \
-	--link maproulette-api:api \
+	--name maproulette-frontend ${apiLink} \
 	maproulette/maproulette-frontend:${VERSION}
 

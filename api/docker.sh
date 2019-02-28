@@ -3,6 +3,10 @@ export VERSION=$1
 git=(${2//:/ })
 apiHost=$3
 CACHEBUST=${VERSION}
+dbLink="--link mr-postgis:db"
+if [[ "$4" = true ]]; then
+    dbLink=""
+fi
 
 cd api
 if [[ "$VERSION" = "LATEST" ]]; then
@@ -22,6 +26,5 @@ fi
 echo "Starting maproulette api container"
 docker run -t --privileged \
         -d -p 9000:9000 \
-        --name maproulette-api \
-        --link mr-postgis:db \
+        --name maproulette-api $dbLink \
         maproulette/maproulette-api:${VERSION}

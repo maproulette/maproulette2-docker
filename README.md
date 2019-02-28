@@ -63,3 +63,12 @@ This is fortunately very easy to accomplish. In the docker.conf file just modify
 **Wait, this is for development, the server is on `localhost` it doesn't work, what now?**
 
 In this case all you need to do is set the server host to `host.docker.internal` and the docker container will know how to communicate with this host. Ie. your database on the localhost.
+
+**I want to only deploy the frontend but it is failing, why?**
+
+If the backend and frontend are deployed it will link the containers together so that they nginx configuration can route any connections to the api container correctly. However if you are only deploying the frontend container then the nginx configuration for that routing will be incorrect. This will cause failure in the creation of the frontend container. To fix this you need to modify the `nginx-config` file by updating the upstream api section to look like follows:
+```
+upstream api {
+    server <API URL>:<API PORT>
+}
+```
