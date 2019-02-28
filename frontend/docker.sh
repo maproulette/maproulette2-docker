@@ -7,7 +7,7 @@ export VERSION=${VERSION}
 git=(${2//:/ })
 CACHEBUST=${VERSION}
 apiLink=""
-if [[ "$3" = "true" ]]; then
+if [[ "$3" != true ]]; then
     apiLink="--link maproulette-api:api"
 fi
 
