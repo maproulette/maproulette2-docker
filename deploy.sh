@@ -70,7 +70,7 @@ while true; do
         --wipeDB)
             wipeDB=true
         ;;
-        --APIHost)
+        --apiHost)
             apiHost=$2
             shift
         ;;
