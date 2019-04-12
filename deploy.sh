@@ -46,7 +46,7 @@ while true; do
         ;;
         -a | --api)
             api=true
-            if [[ $2 =~ - ]]; then
+            if [[ $2 =~ ^- ]]; then
                 shift
                 continue
             fi
