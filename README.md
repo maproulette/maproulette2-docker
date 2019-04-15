@@ -40,17 +40,17 @@ Deploy only the frontend:
 
 `./deploy.sh -f 3.2.1`
 
-Deploy only the backend
+Deploy only the api/backend
 
-`./deploy.sh -b 3.4.0`
+`./deploy.sh -a 3.4.0`
 
 Deploy everything
 
-`./deploy.sh -f 3.2.1 -b 3.4.0`
+`./deploy.sh -f 3.2.1 -a 3.4.0`
 
 Deploy the backend from a specific git repo using database port 5301
 
-`./deploy.sh -b customrepo/maproulette2.git --dbPort 5301`
+`./deploy.sh -a customrepo/maproulette2.git --dbPort 5301`
 
 The ordering of your flags does not matter.
 
