@@ -29,6 +29,6 @@ fi
 echo "Starting maproulette frontend container"
 docker run -t --privileged -d -p 3000:80 \
 	--name maproulette-frontend ${apiLink} \
-    -git --restart unless-stopped \
+    -dit --restart unless-stopped \
 	maproulette/maproulette-frontend:${VERSION}
 
