@@ -1,4 +1,4 @@
-FROM java:8-jdk
+FROM adoptopenjdk/openjdk8:jdk8u212-b03 
 
 RUN export TERM=xterm
 
