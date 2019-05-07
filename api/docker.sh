@@ -27,4 +27,5 @@ echo "Starting maproulette api container"
 docker run -t --privileged \
         -d -p 9000:9000 \
         --name maproulette-api $dbLink \
+        -dit --restart unless-stopped \
         maproulette/maproulette-api:${VERSION}
