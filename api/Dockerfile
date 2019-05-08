@@ -1,4 +1,4 @@
-FROM java:8-jdk
+FROM adoptopenjdk/openjdk8:jdk8u212-b03 
 
 RUN export TERM=xterm
 
@@ -6,7 +6,7 @@ RUN export TERM=xterm
 RUN adduser -system --gid 0 maproulette
 
 # Apt-Get for basic packages
-RUN apt-get update && apt-get upgrade -y && apt-get install -y apt-transport-https
+RUN apt-get update && apt-get upgrade -y && apt-get install -y apt-transport-https gnupg2
 RUN echo "deb https://dl.bintray.com/sbt/debian /" | tee -a /etc/apt/sources.list.d/sbt.list
 RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 642AC823
 RUN apt-get update && apt-get upgrade -y && apt-get install -y scala sbt unzip wget git openssh-server jq g++ build-essential
