@@ -20,8 +20,6 @@ dbPort=""
 apiHost="maproulette.org"
 # Whether the database being used is external or not. If it is external than won't link and build the database images
 dbExternal=false
-# Whether to link the API and frontend, would only not use this if connecting to another API
-apiExternal=false
 
 while true; do
     case "$1" in
@@ -77,9 +75,6 @@ while true; do
         --dbExternal)
             dbExternal=true
         ;;
-        --apiExternal)
-            apiExternal=true
-        ;;
         *)
             break
         ;;
@@ -87,6 +82,8 @@ while true; do
     shift
 done
 
+echo "Building MR Network"
+docker network create --driver bridge mrnet || true
 echo "API: $api $apiRelease $apiGit"
 echo "FRONTEND: $frontend $frontendRelease $frontendGit"
 if [[ "$api" = true ]]; then
@@ -103,6 +100,7 @@ if [[ "$api" = true ]]; then
             echo "Building new mr-postgis container"
             docker run $dbPort \
                 --name mr-postgis \
+                --network mrnet \
                 -e POSTGRES_DB=mrdata \
                 -e POSTGRES_USER=mrdbuser \
                 -e POSTGRES_PASSWORD=mrdbpass \
@@ -116,10 +114,10 @@ if [[ "$api" = true ]]; then
         fi
     fi
     echo "deploying api..."
-    ./api/docker.sh $apiRelease $apiGit $apiHost $dbExternal
+    ./api/docker.sh $apiRelease $apiGit $apiHost
     sleep 10
 fi
 if [[ "$frontend" = true ]]; then
     echo "deploying frontend..."
-    ./frontend/docker.sh $frontendRelease $frontendGit $apiExternal
+    ./frontend/docker.sh $frontendRelease $frontendGit
 fi
