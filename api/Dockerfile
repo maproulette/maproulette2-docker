@@ -31,13 +31,6 @@ RUN export API_HOST=${APIHOST};sbt clean compile dist
 RUN unzip -d / target/universal/MapRouletteAPI.zip
 WORKDIR /MapRouletteAPI
 
-# Retrieve OSM & Mapillary Certificates
-WORKDIR /
-RUN openssl s_client -showcerts -connect "www.openstreetmap.org:443" -servername www.openstreetmap.org </dev/null | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > osm.pem
-RUN openssl s_client -showcerts -connect "a.mapillary.com:443" -servername a.mapillary.com </dev/null | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > mapillary.pem
-RUN keytool -importcert -noprompt -trustcacerts -alias a.mapillary.com -file mapillary.pem -keystore osmcacerts -storepass openstreetmap
-RUN keytool -importcert -noprompt -trustcacerts -alias www.openstreetmap.org -file osm.pem -keystore osmcacerts -storepass openstreetmap
-
 # Bootstrap commands
 ADD bootstrap.sh /etc/bootstrap.sh
 ADD setupServer.sh /MapRouletteAPI/setupServer.sh
@@ -46,7 +39,7 @@ RUN chmod 777 /etc/bootstrap.sh
 RUN chmod 777 /MapRouletteAPI/setupServer.sh
 WORKDIR /MapRouletteAPI
 # Move the truststore to the correct location
-RUN mv /osmcacerts conf/
+ADD osmcacerts conf/
 
 ARG APIHOST="maproulette.org"
 ENV APIHOST=${APIHOST}
