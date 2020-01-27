@@ -19,6 +19,7 @@ RUN chmod 755 /maproulette-frontend
 ADD .env.production /maproulette-frontend/.env.production
 
 # Build the Maproulette Frontend
+ENV NODE_OPTIONS="--max-old-space-size=8192"
 RUN yarn && yarn run build
 
 # Production environment
