@@ -12,7 +12,8 @@ There are a couple of required properties that you will need to setup prior to r
 * **osm.consumerKey** - This is the consumer key for your MapRoulette application in your openstreetmap.org account. 
 * **osm.consumerSecret** - This is the consumer secret that is found in the same MapRoulette application settings as is the consumer key.
 * **maproulette.super.key** - This is the api key that can be used for any API requests and the server will assume that the person making the request is a super user. No requirement to login.
-* **maproulette.super.accounts** - This is a comma separated list of OSM account ids that will be elevated to super user access when they login.  
+* **maproulette.super.accounts** - This is a comma separated list of OSM account ids that will be elevated to super user access when they login. 
+* **maproulette.bootstrap** - Set this to `true` when you build a new MapRoulette API with a new database.  
 
 ##### Frontend
 The frontend requires certain properties to be updated as well. The properties need to be updated in the `.env.production` file that can be found in the frontend directory. The default properties assume that it is pointing to an instance of the MapRoulette backend that has been deployed by docker. So if you do deploy the backend using the deploy script (docker) then you won't need to change these properties.
