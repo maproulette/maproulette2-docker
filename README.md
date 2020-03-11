@@ -36,4 +36,8 @@ For more details on the app registration process, see the [OSM OAuth wiki page](
     * `osm.consumerKey` and `osm.consumerSecret`: the OAuth keys from your OSM OAuth app you created earlier.
 * Save `dev.conf`
 
+There is the possibility that you need to update the osm certs. This is done by the following:
+1. `cd` into `maproulette2/scripts` and run the `updateOSMKeys.sh` script.
+    * this should prevent any suncert issues when building/upping.
+    
 You can now run `docker-compose up`
