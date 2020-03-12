@@ -1,0 +1,24 @@
+#Build the environment
+FROM node:10
+
+#Install necessary components in container including Yarn 
+RUN apt-get update && apt-get upgrade -y && apt-get install -y jq git
+RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=DontWarn apt-key add - && \
+    echo "deb http://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list && \
+    apt-get update && \
+    apt-get install --no-install-recommends yarn 
+
+#copy host files to container
+COPY ./maproulette3 /var/www/maproulette/maproulette3
+
+# RUN chmod 755 /maproulette-frontend
+ADD maproulette3/.env.development.local /var/www/maproulette/maproulette3
+
+#Make this the current work directory
+WORKDIR /var/www/maproulette/maproulette3
+
+#Install all dependencies
+RUN yarn
+
+# Start the Maproulette Development Frontend
+CMD yarn start
