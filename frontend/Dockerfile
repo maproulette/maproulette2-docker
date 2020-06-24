@@ -1,5 +1,5 @@
 #Build the environment
-FROM node:10 as builder
+FROM node:12 as builder
 EXPOSE 3000
 
 RUN apt-get update && apt-get upgrade -y && apt-get install -y jq git
