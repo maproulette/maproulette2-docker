@@ -113,11 +113,22 @@ if [[ "$api" = true ]]; then
             docker start mr-postgis
         fi
     fi
-    echo "deploying api..."
+    echo "building api..."
     ./api/docker.sh $apiRelease $apiGit $apiHost
+fi
+if [[ "$frontend" = true ]]; then
+    echo "building frontend..."
+    ./frontend/docker.sh $frontendRelease $frontendGit
+fi
+
+# Deploy the build docker images
+if [[ "$api" = true ]]; then
+    echo "deploying api..."
+    ./api/docker-start.sh $apiRelease
     sleep 10
 fi
 if [[ "$frontend" = true ]]; then
     echo "deploying frontend..."
-    ./frontend/docker.sh $frontendRelease $frontendGit
+    ./frontend/docker-start.sh $frontendRelease
 fi
+echo "Deployment Complete!"
