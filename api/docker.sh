@@ -12,9 +12,3 @@ echo "Building container for MapRoulette API Version: $VERSION, Repo: ${git[1]},
 docker build -t maproulette/maproulette-api:${VERSION} \
     --build-arg VERSION="${VERSION}" --build-arg GIT="${git[1]}" \
     --build-arg APIHOST="${apiHost}" --build-arg CACHEBUST=${CACHEBUST} .
-
-echo "Stopping and removing maproulette api container"
-RUNNING=$(docker inspect --format="{{ .State.Running }}" maproulette-api 2> /dev/null)
-if [[ $? -eq 0 ]]; then
-  docker stop maproulette-api || true && docker rm maproulette-api || true
-fi
