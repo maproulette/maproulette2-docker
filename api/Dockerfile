@@ -38,8 +38,10 @@ ADD docker.conf	/MapRouletteAPI/conf/docker.conf
 RUN chmod 777 /etc/bootstrap.sh
 RUN chmod 777 /MapRouletteAPI/setupServer.sh
 WORKDIR /MapRouletteAPI
-# Move the truststore to the correct location
-ADD osmcacerts conf/
+
+# Add the OSM cert to the Java Truststore
+RUN openssl s_client -showcerts -connect "www.openstreetmap.org:443" -servername www.openstreetmap.org </dev/null | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > osm.pem
+RUN keytool -importcert -noprompt -trustcacerts -alias www.openstreetmap.org -file osm.pem -keystore $JAVA_HOME/jre/lib/security/cacerts -storepass changeit
 
 ARG APIHOST="maproulette.org"
 ENV APIHOST=${APIHOST}
