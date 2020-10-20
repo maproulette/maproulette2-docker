@@ -9,6 +9,4 @@ if [ -z "$PORT" ]; then
 fi
 
 /MapRouletteAPI/bin/maprouletteapi -Dhttp.port=$PORT -Dconfig.resource=docker.conf \
-	-DAPI_HOST="${APIHOST}" \
-	-Djavax.net.ssl.trustStore=/MapRouletteAPI/conf/osmcacerts \
-	-Djavax.net.ssl.trustStorePassword=openstreetmap
+	-DAPI_HOST="${APIHOST}" 
