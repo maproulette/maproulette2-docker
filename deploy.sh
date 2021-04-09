@@ -20,6 +20,8 @@ dbPort=""
 apiHost="maproulette.org"
 # Whether the database being used is external or not. If it is external than won't link and build the database images
 dbExternal=false
+# Whether to just build the docker images and not deploy them
+buildOnly=false
 
 while true; do
     case "$1" in
@@ -75,6 +77,9 @@ while true; do
         --dbExternal)
             dbExternal=true
         ;;
+        --buildOnly)
+            buildOnly=true
+        ;;
         *)
             break
         ;;
@@ -122,12 +127,12 @@ if [[ "$frontend" = true ]]; then
 fi
 
 # Deploy the build docker images
-if [[ "$api" = true ]]; then
+if [[ "$api" = true ]] && [[ "$buildOnly" = false ]]; then
     echo "deploying api..."
     ./api/docker-start.sh $apiRelease
     sleep 10
 fi
-if [[ "$frontend" = true ]]; then
+if [[ "$frontend" = true ]] && [[ "$buildOnly" = false ]]; then
     echo "deploying frontend..."
     ./frontend/docker-start.sh $frontendRelease
 fi
