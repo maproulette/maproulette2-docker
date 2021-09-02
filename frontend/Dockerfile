@@ -23,7 +23,7 @@ ENV NODE_OPTIONS="--max-old-space-size=8192"
 RUN yarn && yarn run build
 
 # Production environment
-FROM nginx:1.15.8-alpine
+FROM nginx:1.20.1-alpine
 RUN mkdir -p /var/www/maproulette
 COPY --from=builder /maproulette-frontend/build /var/www/maproulette
 RUN mkdir -p /etc/nginx/sites-enabled
