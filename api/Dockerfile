@@ -1,4 +1,4 @@
-FROM adoptopenjdk/openjdk8:jdk8u212-b03 
+FROM openjdk:8u302-slim
 
 RUN export TERM=xterm
 
@@ -6,10 +6,12 @@ RUN export TERM=xterm
 RUN adduser -system --gid 0 maproulette
 
 # Apt-Get for basic packages
-RUN apt-get update && apt-get upgrade -y && apt-get install -y apt-transport-https gnupg2
-RUN echo "deb https://dl.bintray.com/sbt/debian /" | tee -a /etc/apt/sources.list.d/sbt.list
-RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 642AC823
+RUN apt-get update && apt-get upgrade -y && apt-get install -y apt-transport-https gnupg2 curl
+RUN echo "deb https://repo.scala-sbt.org/scalasbt/debian all main" | tee /etc/apt/sources.list.d/sbt.list
+RUN echo "deb https://repo.scala-sbt.org/scalasbt/debian /" | tee /etc/apt/sources.list.d/sbt_old.list
+RUN curl -sL "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x2EE0EA64E40A89B84B2DF73499E82A75642AC823" | apt-key add
 RUN apt-get update && apt-get upgrade -y && apt-get install -y scala sbt unzip wget git openssh-server jq g++ build-essential
+
 EXPOSE 80
 
 ARG GIT="maproulette/maproulette2"
@@ -18,7 +20,7 @@ ARG CACHEBUST=1
 RUN echo $CACHEBUST
 # Download Maproulette V2
 RUN git clone https://github.com/${GIT}.git /maproulette-api
-RUN chmod 777 /maproulette-api
+RUN chmod 775 /maproulette-api
 WORKDIR /maproulette-api
 ARG VERSION="LATEST"
 RUN echo $VERSION
@@ -35,8 +37,8 @@ WORKDIR /MapRouletteAPI
 ADD bootstrap.sh /etc/bootstrap.sh
 ADD setupServer.sh /MapRouletteAPI/setupServer.sh
 ADD docker.conf	/MapRouletteAPI/conf/docker.conf
-RUN chmod 777 /etc/bootstrap.sh
-RUN chmod 777 /MapRouletteAPI/setupServer.sh
+RUN chmod 775 /etc/bootstrap.sh
+RUN chmod 775 /MapRouletteAPI/setupServer.sh
 WORKDIR /MapRouletteAPI
 
 # Add the OSM cert to the Java Truststore
