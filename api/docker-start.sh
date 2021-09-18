@@ -1,14 +1,21 @@
 #!/bin/bash
+
+set -exuo pipefail
+
 export VERSION=$1
-echo "Stopping and removing maproulette api container"
-RUNNING=$(docker inspect --format="{{ .State.Running }}" maproulette-api 2> /dev/null)
-if [[ $? -eq 0 ]]; then
-  docker stop maproulette-api || true && docker rm maproulette-api || true
+
+if [ "$(docker ps -qa -f name=maproulette-api)" ]; then
+  echo "Removing existing maproulette-api container"
+  docker stop maproulette-api
+  docker rm maproulette-api
 fi
+
 echo "Starting maproulette api container"
-docker run -t --privileged \
-        -d -p 9000:9000 \
-        --name maproulette-api \
-        -dit --restart unless-stopped \
-        --network mrnet \
-        maproulette/maproulette-api:${VERSION}
+docker run \
+  -itd \
+  --name maproulette-api \
+  --network mrnet \
+  --restart unless-stopped \
+  --privileged \
+  -p 9000:9000 \
+  maproulette/maproulette-api:"${VERSION}"
