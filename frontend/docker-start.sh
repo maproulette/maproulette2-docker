@@ -1,16 +1,22 @@
 #!/bin/bash
-if [[ -z "$VERSION" ]]; then
-	VERSION=$1
+
+set -exuo pipefail
+
+# The VERSION can be set with an environment variable. If it's not set, use $1
+export VERSION=${VERSION:-$1}
+
+if [ "$(docker ps -qa -f name=maproulette-frontend)" ]; then
+  echo "Removing existing maproulette-frontend container"
+  docker stop maproulette-frontend
+  docker rm maproulette-frontend
 fi
-export VERSION=${VERSION}
-echo "Stopping and removing maproulette frontend container"
-RUNNING=$(docker inspect --format="{{ .State.Running }}" maproulette-frontend 2> /dev/null)
-if [[ $? -eq 0 ]]; then
-  docker stop maproulette-frontend || true && docker rm maproulette-frontend || true
-fi
+
 echo "Starting maproulette frontend container"
-docker run -t --privileged -d -p 3000:80 \
-	--name maproulette-frontend \
-    -dit --restart unless-stopped \
-    --network mrnet \
-	maproulette/maproulette-frontend:${VERSION}
+docker run \
+  -itd \
+  --name maproulette-frontend \
+  --network mrnet \
+  --restart unless-stopped \
+  --privileged \
+  -p 3000:80 \
+  maproulette/maproulette-frontend:"${VERSION}"

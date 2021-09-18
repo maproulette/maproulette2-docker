@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -exuo pipefail
+
 # Whether to deploy the frontend
 frontend=false
 # What release of the frontend to deploy
@@ -23,6 +25,8 @@ dbExternal=false
 # Whether to just build the docker images and not deploy them
 buildOnly=false
 
+# Allow unset varaibles to be used while setting arguments
+set +u
 while true; do
     case "$1" in
         -f | --frontend)
@@ -86,6 +90,7 @@ while true; do
     esac
     shift
 done
+set -u
 
 echo "Building MR Network"
 docker network create --driver bridge mrnet || true
@@ -93,47 +98,55 @@ echo "API: $api $apiRelease $apiGit"
 echo "FRONTEND: $frontend $frontendRelease $frontendGit"
 if [[ "$api" = true ]]; then
     if [[ "$dbExternal" != true ]]; then
-        echo "deploying database..."
-        if [[ "$wipeDB" == true ]]; then
-            echo "Stopping and removing mr-postgis container"
+        echo "Deploying mr-postgis database container..."
+
+        # If wipeDB is true and the mr-postgis container exists (running or stopped), then stop and remove the container
+        if [[ "$wipeDB" == true && "$(docker ps -qa -f name=mr-postgis)" ]]; then
+            echo "Removing mr-postgis container"
             docker stop mr-postgis
             docker rm mr-postgis
         fi
 
-        instance=$(docker ps -a | grep mdillon/postgis)
-        if [[ -z "$instance" ]]; then
-            echo "Building new mr-postgis container"
-            docker run $dbPort \
+        # If the container named mr-postgis exists (running or stopped), then start it
+        if [ "$(docker ps -qa -f name=mr-postgis)" ]; then
+            echo "Starting the existing mr-postgis container"
+            # NOTE: Starting an already-running container is not an error
+            docker start mr-postgis
+        else
+            # The mr-postgis container does not exist. Create and run it.
+            echo "Running new mr-postgis container"
+            docker run \
+                -d \
+                $dbPort \
                 --name mr-postgis \
                 --network mrnet \
+                --restart unless-stopped \
                 -e POSTGRES_DB=mrdata \
                 -e POSTGRES_USER=mrdbuser \
                 -e POSTGRES_PASSWORD=mrdbpass \
-                -d mdillon/postgis
-            sleep 10
-        fi
-        instance=$(docker ps | grep mdillon/postgis)
-        if [[ -z "$instance" ]]; then
-            echo "Restarting mr-postgis container"
-            docker start mr-postgis
+                mdillon/postgis
         fi
     fi
-    echo "building api..."
-    ./api/docker.sh $apiRelease $apiGit $apiHost
-fi
-if [[ "$frontend" = true ]]; then
-    echo "building frontend..."
-    ./frontend/docker.sh $frontendRelease $frontendGit
+
+    echo "Building api docker image..."
+    ./api/docker.sh "$apiRelease" "$apiGit" "$apiHost"
 fi
 
-# Deploy the build docker images
-if [[ "$api" = true ]] && [[ "$buildOnly" = false ]]; then
-    echo "deploying api..."
-    ./api/docker-start.sh $apiRelease
+if [[ "$frontend" = true ]]; then
+    echo "Building frontend docker image..."
+    ./frontend/docker.sh "$frontendRelease" "$frontendGit"
+fi
+
+# Deploy the docker images
+if [[ "$api" = true && "$buildOnly" = false ]]; then
+    echo "Deploying api..."
+    ./api/docker-start.sh "$apiRelease"
     sleep 10
 fi
-if [[ "$frontend" = true ]] && [[ "$buildOnly" = false ]]; then
-    echo "deploying frontend..."
-    ./frontend/docker-start.sh $frontendRelease
+
+if [[ "$frontend" = true && "$buildOnly" = false ]]; then
+    echo "Deploying frontend..."
+    ./frontend/docker-start.sh "$frontendRelease"
 fi
+
 echo "Deployment Complete!"
