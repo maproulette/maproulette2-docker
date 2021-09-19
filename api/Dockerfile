@@ -1,52 +1,60 @@
-FROM openjdk:8u302-slim
+ARG OPENJDK_JDK_TAG=11-bullseye # jdk version for compiling the source
+ARG OPENJDK_JRE_TAG=11-jre-bullseye # jre runtime, without the javac compiler, for running the jar
+FROM openjdk:${OPENJDK_JDK_TAG} as builder
 
-RUN export TERM=xterm
-
-# Add the User
-RUN adduser -system --gid 0 maproulette
-
-# Apt-Get for basic packages
-RUN apt-get update && apt-get upgrade -y && apt-get install -y apt-transport-https gnupg2 curl
-RUN echo "deb https://repo.scala-sbt.org/scalasbt/debian all main" | tee /etc/apt/sources.list.d/sbt.list
-RUN echo "deb https://repo.scala-sbt.org/scalasbt/debian /" | tee /etc/apt/sources.list.d/sbt_old.list
-RUN curl -sL "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x2EE0EA64E40A89B84B2DF73499E82A75642AC823" | apt-key add
-RUN apt-get update && apt-get upgrade -y && apt-get install -y scala sbt unzip wget git openssh-server jq g++ build-essential
-
-EXPOSE 80
-
-ARG GIT="maproulette/maproulette2"
-RUN echo ${GIT}
+ARG SBT_VERSION=1.5.5
 ARG CACHEBUST=1
-RUN echo $CACHEBUST
-# Download Maproulette V2
-RUN git clone https://github.com/${GIT}.git /maproulette-api
-RUN chmod 775 /maproulette-api
-WORKDIR /maproulette-api
+ARG GIT="maproulette/maproulette2"
 ARG VERSION="LATEST"
-RUN echo $VERSION
-RUN if [ "${VERSION}" != "LATEST" ]; then git checkout tags/${VERSION} ; fi
 
-# package Maproulette V2
-ARG APIHOST="maproulette.org"
-RUN echo ${APIHOST}
-RUN export API_HOST=${APIHOST};sbt clean compile dist
-RUN unzip -d / target/universal/MapRouletteAPI.zip
-WORKDIR /MapRouletteAPI
+# This is based on mozilla docker-sbt https://github.com/mozilla/docker-sbt/blob/main/Dockerfile
+# Install sbt
+RUN \
+  mkdir /working/ && \
+  cd /working/ && \
+  curl -L -o sbt-$SBT_VERSION.deb https://repo.scala-sbt.org/scalasbt/debian/sbt-$SBT_VERSION.deb && \
+  dpkg -i sbt-$SBT_VERSION.deb && \
+  rm sbt-$SBT_VERSION.deb && \
+  apt-get update && \
+  apt-get install sbt && \
+  cd && \
+  rm -r /working/ && \
+  sbt sbtVersion
 
-# Bootstrap commands
-ADD bootstrap.sh /etc/bootstrap.sh
-ADD setupServer.sh /MapRouletteAPI/setupServer.sh
-ADD docker.conf	/MapRouletteAPI/conf/docker.conf
-RUN chmod 775 /etc/bootstrap.sh
-RUN chmod 775 /MapRouletteAPI/setupServer.sh
-WORKDIR /MapRouletteAPI
+RUN \
+    echo "${GIT}" && \
+    echo "${CACHEBUST}" && \
+    echo "${VERSION}" && \
+    echo "${APIHOST}" && \
+    if [ "${VERSION}" = "LATEST" ]; then \
+        git clone --depth 1 https://github.com/${GIT}.git /maproulette-api ; \
+    else \
+        git clone --depth 1 --branch ${VERSION} https://github.com/${GIT}.git /maproulette-api ; \
+    fi
+WORKDIR /maproulette-api
 
-# Add the OSM cert to the Java Truststore
-RUN openssl s_client -showcerts -connect "www.openstreetmap.org:443" -servername www.openstreetmap.org </dev/null | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > osm.pem
-RUN keytool -importcert -noprompt -trustcacerts -alias www.openstreetmap.org -file osm.pem -keystore $JAVA_HOME/jre/lib/security/cacerts -storepass changeit
+RUN \
+    echo "\n\nBUILDING API COMMIT $(git rev-parse HEAD)\n\n" && \
+    export API_HOST=${APIHOST} && \
+    sbt evicted && \
+    sbt clean compile dist && \
+    unzip -d / target/universal/MapRouletteAPI.zip
 
+FROM openjdk:${OPENJDK_JRE_TAG}
 ARG APIHOST="maproulette.org"
 ENV APIHOST=${APIHOST}
-ENV PORT=9000
 
-ENTRYPOINT ["/etc/bootstrap.sh"]
+RUN \
+    groupadd -g 1000 maproulette && \
+    useradd --uid 1000 --gid 1000 --groups 0 --create-home --home-dir /MapRouletteAPI maproulette && \
+    chmod 0775 /MapRouletteAPI && \
+    chown -R 1000:0 /MapRouletteAPI
+
+COPY --from=builder --chown=1000:0 /MapRouletteAPI /MapRouletteAPI
+USER maproulette
+WORKDIR /MapRouletteAPI
+
+ADD --chown=1000:0 setupServer.sh /MapRouletteAPI/setupServer.sh
+ADD --chown=1000:0 docker.conf /MapRouletteAPI/conf/docker.conf
+
+ENTRYPOINT ["./setupServer.sh"]
