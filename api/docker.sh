@@ -7,6 +7,12 @@ git=(${2//:/ })
 apiHost=$3
 CACHEBUST=${VERSION}
 
+if [ ! -f "api/application-overrides.conf" ]; then
+    echo "File api/application-overrides.conf does not exist!" >&2
+    echo "Copy api/application-overrides.template.conf and rename it as api/application-overrides.conf, and override as necessary." >&2
+    exit 1
+fi
+
 cd api
 if [ "$VERSION" = "LATEST" ]; then
     CACHEBUST=$(git ls-remote https://github.com/maproulette/maproulette2.git | grep HEAD | cut -f 1)

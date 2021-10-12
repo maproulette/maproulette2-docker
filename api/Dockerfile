@@ -55,6 +55,6 @@ USER maproulette
 WORKDIR /MapRouletteAPI
 
 ADD --chown=1000:0 setupServer.sh /MapRouletteAPI/setupServer.sh
-ADD --chown=1000:0 docker.conf /MapRouletteAPI/conf/docker.conf
+ADD --chown=1000:0 application-overrides.conf /MapRouletteAPI/conf/application-overrides.conf
 
 ENTRYPOINT ["./setupServer.sh"]
