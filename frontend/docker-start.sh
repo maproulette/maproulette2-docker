@@ -17,6 +17,5 @@ docker run \
   --name maproulette-frontend \
   --network mrnet \
   --restart unless-stopped \
-  --privileged \
   -p 3000:80 \
   maproulette/maproulette-frontend:"${VERSION}"

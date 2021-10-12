@@ -16,6 +16,5 @@ docker run \
   --name maproulette-api \
   --network mrnet \
   --restart unless-stopped \
-  --privileged \
   -p 9000:9000 \
   maproulette/maproulette-api:"${VERSION}"
