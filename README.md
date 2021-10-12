@@ -20,7 +20,11 @@ To avoid accidentally checking in private keys, the `api/application-overrides.t
 * **maproulette.bootstrap** - Set this to `true` when you build a new MapRoulette API with a new database.
 
 ##### Frontend
-The frontend requires certain properties to be updated as well. The properties need to be updated in the `.env.production` file that can be found in the frontend directory. The default properties assume that it is pointing to an instance of the MapRoulette backend that has been deployed by docker. So if you do deploy the backend using the deploy script (docker) then you won't need to change these properties.
+The frontend requires certain properties to be updated as well. The main configuration is located within the [maproulette3 repository as .env](https://github.com/osmlab/maproulette3/blob/main/.env), and the below will override the originals.
+
+To avoid accidentally checking in private data, the `frontend/env.template.production` file must be copied as `frontend/env.production`, and updated as necessary.
+
+The env.template.production assume that it is pointing to an instance of the MapRoulette backend that has been deployed by docker. So if you do deploy the backend using the deploy script (docker) then you won't need to change these properties.
 
 * **REACT_APP_BASE_PATH** - This is the root path for the MapRoulette frontend App. Which by default is "/" and wouldn't ordinarily need to be changed.
 * **REACT_APP_URL** - This is the root url for the MapRoulette frontend App. By default it is localhost:3000, the reason for this is that it is generally advisable to front these services with a http server like nginx or Apache webserver. And those web servers would then just proxy requests on port 80 to port 3000. But if you don't need certain features you can change this to port 80 instead and not have it fronted by a web server.

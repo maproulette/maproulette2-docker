@@ -7,6 +7,12 @@ export VERSION=${VERSION:-$1}
 git=(${2//:/ })
 CACHEBUST=${VERSION}
 
+if [ ! -f "frontend/env.production" ]; then
+    echo "File frontend/env.production does not exist!" >&2
+    echo "Copy frontend/env.template.production and rename it as frontend/env.production, and override as necessary." >&2
+    exit 1
+fi
+
 cd frontend
 if [ "$VERSION" = "LATEST" ]; then
     CACHEBUST=$(git ls-remote https://github.com/osmlab/maproulette3.git | grep HEAD | cut -f 1)
