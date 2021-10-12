@@ -11,4 +11,4 @@ rm -f RUNNING_PID
 /MapRouletteAPI/bin/maprouletteapi \
 	-Dhttp.port=9000 \
 	-DAPI_HOST="${APIHOST}" \
-	-Dconfig.resource=docker.conf
+	-Dconfig.resource=application-overrides.conf
