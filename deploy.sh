@@ -16,8 +16,8 @@ apiRelease=LATEST
 apiGit="git:maproulette/maproulette2"
 # Whether to wipe the docker database, start clean
 wipeDB=false
-# What port to expose the docker database on, by default will not expose it
-dbPort=""
+# Host port to expose the postgis database container. By default bind to localhost:5432 so that pgadmin is able to connect to the database via an ssh tunnel.
+dbPort="127.0.0.1:5432"
 # What host the API is on, used for Swagger
 apiHost="maproulette.org"
 # Whether the database being used is external or not. If it is external than won't link and build the database images
@@ -68,7 +68,7 @@ while true; do
             done
         ;;
         --dbPort)
-            dbPort="-p 5432:$2"
+            dbPort="$2"
             shift
         ;;
         --wipeDB)
@@ -117,14 +117,16 @@ if [[ "$api" = true ]]; then
             echo "Running new mr-postgis container"
             docker run \
                 -d \
-                $dbPort \
+                -p "$dbPort":5432 \
                 --name mr-postgis \
                 --network mrnet \
                 --restart unless-stopped \
+                --shm-size=512MB \
                 -e POSTGRES_DB=mrdata \
                 -e POSTGRES_USER=mrdbuser \
                 -e POSTGRES_PASSWORD=mrdbpass \
-                mdillon/postgis
+                --volume $(pwd)/postgres-data:/var/lib/postgresql/data \
+                postgis/postgis:11-2.5
         fi
     fi
 
