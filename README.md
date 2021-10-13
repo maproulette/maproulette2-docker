@@ -32,16 +32,40 @@ The env.template.production assume that it is pointing to an instance of the Map
 
 ### Running deploy.sh
 
-The deploy script can deploy the 3 services that are required for a complete MapRoulette setup. The database, the backend and the frontend. Any combination of the 3 can be deployed as needed using the deploy.sh script. The primary script takes the following parameters:
+The `deploy.sh` script takes care of building and deploying containers for a complete MapRoulette service: database, backend, and frontend.
 
-- **-f | --frontend [RELEASE_VERSION] [GIT]** - Deploys the frontend using docker. If the RELEASE_VERSION is not supplied it will set it to `LATEST` and will pull the latest code from github. If you just want the latest then use "LATEST". If GIT is not supplied then it will use the default `git:osmlab/maproulette3`. The GIT value is optional had has the form `git:<GIT_ORGANIZATION>/<GIT_REPO>`. By using the git option you can deploy maproulette from any repo. Most comon usage would be if you have forked MapRoulette and have changes that may not be ready to be published to the public repo.
-- **-a | --api [RELEASE_VERSION] [GIT]** - Deploys the backend using docker. If the RELEASE_VERSION is not supplied it will set it to `LATEST` and will pull the latest code from github. If you just want the latest then use `LATEST`. Important to note the frontend and backend have different release cycles and different versions. Some frontends may be incompatible with some frontend versions. For GIT options see above. Default value is `git:maproulette/maproulette2`.
-- **--dbPort [PORT]** - This option allows the deployed postgres database to be accessible by some port. The port is required when using this option.
+The services started are dependent on the arguments provided to `deploy.sh` or the customized contents of `conf.sh` (copy the `conf.template.sh` and edit it as needed). The command-line arguments take precedence over the `conf.sh`.
 
-Other deploy options
+The script takes the following parameters:
 
-- **--wipeDB** - This option will wipeout the database image and recreate from scratch. Be careful when using this option as it will wipe out any data in your database. So generally it is a good idea to backup the database prior to doing this.
-- **--apiHost [API URL]** - This option is for the Swagger UI and defines the URL that the API is being deployed on.
+* **-f | --frontend [RELEASE_VERSION] [GIT]** - Deploys the frontend container.
+  * `RELEASE_VERSION` is optional and defaults to `LATEST`, using the latest trunk commit.
+  * `GIT` is optional and defaults to `git:osmlab/maproulette3`. `GIT` has the form `git:<GIT_ORGANIZATION>/<GIT_REPO>`. This is helpful to deploy forked MapRoulette projects from github.
+* **-a | --api [RELEASE_VERSION] [GIT]** - Deploys the backend container.
+  * `RELEASE_VERSION` is optional and defaults to `LATEST`, using the latest trunk commit.
+  * IMPORTANT NOTE: the frontend and backend have different release cycles and different versions. Be sure to use compatible versions of frontend and backend.
+  * `GIT` is optional and defaults to `git:maproulette/maproulette2`. `GIT` has the form `git:<GIT_ORGANIZATION>/<GIT_REPO>`. This is helpful to deploy forked MapRoulette projects from github.
+* **--dbPort [PORT]** - The host system's port to use for the database, defaulting to `127.0.0.1:5432`.
+* **--wipeDB** - This option will stop, remove, and recreate the database container. As the database content is written to the local disk, and not to the container, the recreate of the database **does not destroy its data**.
+* **--apiHost [API URL]** - This option is for the Swagger UI and defines the URL that the API is being deployed on.
+
+If you'd like to avoid using command line arguments, create `conf.sh` with your content.
+For example: to deploy the database, frontend at latest, backend at latest:
+
+```sh
+# Create the frontend using the latest commit
+frontend=true
+frontendRelease=LATEST
+
+# Create the api using the latest commit
+api=true
+apiRelease=LATEST
+apiHost="my-custom-maproulette.org"
+
+# Recreate the database container. Data is not lost since it is a local volume mount.
+wipeDB=false
+dbExternal=false
+```
 
 ##### Examples
 

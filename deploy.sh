@@ -2,28 +2,36 @@
 
 set -exuo pipefail
 
+# If there is a conf.sh, include it to override any of the below variables.
+# Note that any commandline overrides will take precedence.
+if [ -f "conf.sh" ]; then
+    echo "Using variables from conf.sh"
+    # shellcheck source=/dev/null
+    source conf.sh
+fi
+
 # Whether to deploy the frontend
-frontend=false
+frontend=${frontend:-false}
 # What release of the frontend to deploy
-frontendRelease=LATEST
+frontendRelease=${frontendRelease:-LATEST}
 # The Git location for the frontend
-frontendGit="git:osmlab/maproulette3"
+frontendGit=${frontendGit:-"git:osmlab/maproulette3"}
 # Whether to deploy the API
-api=false
+api=${api:-false}
 # What release of the API to deploy
-apiRelease=LATEST
+apiRelease=${apiRelease:-LATEST}
 # The Git location for the API
-apiGit="git:maproulette/maproulette2"
+apiGit=${apiGit:-"git:maproulette/maproulette2"}
 # Whether to wipe the docker database, start clean
-wipeDB=false
+wipeDB=${wipeDB:-false}
 # Host port to expose the postgis database container. By default bind to localhost:5432 so that pgadmin is able to connect to the database via an ssh tunnel.
-dbPort="127.0.0.1:5432"
+dbPort=${dbPort:-"127.0.0.1:5432"}
 # What host the API is on, used for Swagger
-apiHost="maproulette.org"
+apiHost=${apiHost:-"maproulette.org"}
 # Whether the database being used is external or not. If it is external than won't link and build the database images
-dbExternal=false
+dbExternal=${dbExternal:-false}
 # Whether to just build the docker images and not deploy them
-buildOnly=false
+buildOnly=${buildOnly:-false}
 
 # Allow unset varaibles to be used while setting arguments
 set +u
@@ -125,7 +133,7 @@ if [[ "$api" = true ]]; then
                 -e POSTGRES_DB=mrdata \
                 -e POSTGRES_USER=mrdbuser \
                 -e POSTGRES_PASSWORD=mrdbpass \
-                --volume $(pwd)/postgres-data:/var/lib/postgresql/data \
+                --volume "$(pwd)/postgres-data":/var/lib/postgresql/data \
                 postgis/postgis:11-2.5
         fi
     fi
