@@ -1,4 +1,5 @@
 postgres-data/
 api/application-overrides.conf
 frontend/env.production
+frontend/customLayers.json
 /conf.sh

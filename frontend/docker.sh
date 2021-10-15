@@ -13,6 +13,12 @@ if [ ! -f "frontend/env.production" ]; then
     exit 1
 fi
 
+if [ ! -f "frontend/customLayers.json" ]; then
+    echo "File frontend/customLayers.json does not exist, creating the file with content '[]'"
+    echo "For more information about map layers, see https://github.com/osmlab/maproulette3#adding-additional-and-custom-map-layers"
+    echo "[]" > frontend/customLayers.json
+fi
+
 cd frontend
 if [ "$VERSION" = "LATEST" ]; then
     CACHEBUST=$(git ls-remote https://github.com/osmlab/maproulette3.git | grep HEAD | cut -f 1)
