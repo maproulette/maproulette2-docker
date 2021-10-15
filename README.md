@@ -30,6 +30,9 @@ The env.template.production assume that it is pointing to an instance of the Map
 * **REACT_APP_URL** - This is the root url for the MapRoulette frontend App. By default it is localhost:3000, the reason for this is that it is generally advisable to front these services with a http server like nginx or Apache webserver. And those web servers would then just proxy requests on port 80 to port 3000. But if you don't need certain features you can change this to port 80 instead and not have it fronted by a web server.
 * **REACT_APP_MAP_ROULETTE_SERVER_URL** - This is the root server url for the MapRoulette backend. By default the MapRoulette backend will startup on port 9000, but if you are pointing to an instance that has started up on a different port you can change that here.
 
+Custom map layers are supported and documented within the [maproulette3 repository](https://github.com/osmlab/maproulette3#adding-additional-and-custom-map-layers).
+If the `frontend/customLayers.json` file does not exist, the deploy script will create the file with content `[]`.
+
 ### Running deploy.sh
 
 The `deploy.sh` script takes care of building and deploying containers for a complete MapRoulette service: database, backend, and frontend.

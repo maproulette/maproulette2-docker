@@ -24,6 +24,7 @@ WORKDIR /maproulette-frontend
 
 # This file is needed for the build process
 ADD env.production .env.production
+ADD customLayers.json ./src/customLayers.json
 
 # Build the Maproulette Frontend
 ENV NODE_OPTIONS="--max-old-space-size=8192"
