@@ -37,6 +37,7 @@ FROM nginx:${NGINX_TAG}
 ADD nginx-config /etc/nginx/sites-enabled/maproulette
 ADD nginx.conf /etc/nginx/nginx.conf
 RUN \
+    apk --update-cache upgrade && \
     mkdir -p /etc/nginx/sites-enabled /var/www/maproulette
 COPY --from=builder /maproulette-frontend/build /var/www/maproulette
 

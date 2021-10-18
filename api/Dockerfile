@@ -16,7 +16,7 @@ RUN \
   dpkg -i sbt-$SBT_VERSION.deb && \
   rm sbt-$SBT_VERSION.deb && \
   apt-get update && \
-  apt-get install sbt && \
+  apt-get install -y sbt && \
   cd && \
   rm -r /working/ && \
   sbt sbtVersion
@@ -44,6 +44,11 @@ FROM openjdk:${OPENJDK_JRE_TAG}
 ARG APIHOST="maproulette.org"
 ENV APIHOST=${APIHOST}
 
+# Runtime image needs to have the most up-to-date patches
+RUN \
+    apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get upgrade -y && \
+    rm -rf /var/lib/apt/lists/*
 RUN \
     groupadd -g 1000 maproulette && \
     useradd --uid 1000 --gid 1000 --groups 0 --create-home --home-dir /MapRouletteAPI maproulette && \
