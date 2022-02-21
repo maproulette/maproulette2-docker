@@ -1,0 +1,26 @@
+name: Pull Request Build
+on: [pull_request]
+jobs:
+  build-api:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Build the api image
+        run: |
+          cp ./api/application-overrides.template.conf ./api/application-overrides.conf
+          ./deploy.sh --api LATEST --buildOnly --dbExternal
+
+  build-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Build the frontend image
+        run: |
+          cp ./frontend/env.template.production ./frontend/env.production
+          ./deploy.sh --frontend LATEST --buildOnly
