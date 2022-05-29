@@ -26,8 +26,6 @@ apiGit=${apiGit:-"git:maproulette/maproulette2"}
 wipeDB=${wipeDB:-false}
 # Host port to expose the postgis database container. By default bind to localhost:5432 so that pgadmin is able to connect to the database via an ssh tunnel.
 dbPort=${dbPort:-"127.0.0.1:5432"}
-# What host the API is on, used for Swagger
-apiHost=${apiHost:-"maproulette.org"}
 # Whether the database being used is external or not. If it is external than won't link and build the database images
 dbExternal=${dbExternal:-false}
 # Whether to just build the docker images and not deploy them
@@ -82,10 +80,6 @@ while true; do
         --wipeDB)
             wipeDB=true
         ;;
-        --apiHost)
-            apiHost=$2
-            shift
-        ;;
         --dbExternal)
             dbExternal=true
         ;;
@@ -139,7 +133,7 @@ if [[ "$api" = true ]]; then
     fi
 
     echo "Building api docker image..."
-    ./api/docker.sh "$apiRelease" "$apiGit" "$apiHost"
+    ./api/docker.sh "$apiRelease" "$apiGit"
 fi
 
 if [[ "$frontend" = true ]]; then

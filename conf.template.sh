@@ -29,9 +29,6 @@
 # Host port to expose the postgis database container. By default bind to localhost:5432 so that pgadmin is able to connect to the database via an ssh tunnel.
 # dbPort="127.0.0.1:5432"
 
-# What host the API is on, used for Swagger
-# apiHost="maproulette.org"
-
 # Whether the database being used is external or not. If it is external than won't link and build the database images
 # dbExternal=false
 

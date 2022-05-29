@@ -25,7 +25,6 @@ RUN \
     echo "${GIT}" && \
     echo "${CACHEBUST}" && \
     echo "${VERSION}" && \
-    echo "${APIHOST}" && \
     if [ "${VERSION}" = "LATEST" ]; then \
         git clone --depth 1 https://github.com/${GIT}.git /maproulette-api ; \
     else \
@@ -35,14 +34,11 @@ WORKDIR /maproulette-api
 
 RUN \
     echo "\n\nBUILDING API COMMIT $(git rev-parse HEAD)\n\n" && \
-    export API_HOST=${APIHOST} && \
     sbt evicted && \
     sbt clean compile dist && \
     unzip -d / target/universal/MapRouletteAPI.zip
 
 FROM openjdk:${OPENJDK_JRE_TAG}
-ARG APIHOST="maproulette.org"
-ENV APIHOST=${APIHOST}
 
 # Runtime image needs to have the most up-to-date patches
 RUN \

@@ -50,7 +50,6 @@ The script takes the following parameters:
   * `GIT` is optional and defaults to `git:maproulette/maproulette2`. `GIT` has the form `git:<GIT_ORGANIZATION>/<GIT_REPO>`. This is helpful to deploy forked MapRoulette projects from github.
 * **--dbPort [PORT]** - The host system's port to use for the database, defaulting to `127.0.0.1:5432`.
 * **--wipeDB** - This option will stop, remove, and recreate the database container. As the database content is written to the local disk, and not to the container, the recreate of the database **does not destroy its data**.
-* **--apiHost [API URL]** - This option is for the Swagger UI and defines the URL that the API is being deployed on.
 
 If you'd like to avoid using command line arguments, create `conf.sh` with your content.
 For example: to deploy the database, frontend at latest, backend at latest:
@@ -63,7 +62,6 @@ frontendRelease=LATEST
 # Create the api using the latest commit
 api=true
 apiRelease=LATEST
-apiHost="my-custom-maproulette.org"
 
 # Recreate the database container. Data is not lost since it is a local volume mount.
 wipeDB=false
