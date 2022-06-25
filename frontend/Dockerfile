@@ -8,7 +8,11 @@ ARG VERSION="LATEST"
 
 RUN \
     apt-get update && \
-    apt-get install -y jq && \
+    apt-get install -y \
+        jq \
+        python2 \
+    && \
+    ln -sf /usr/bin/python2 /usr/bin/python && \
     rm -rf /var/lib/apt/lists/*
 
 RUN \
