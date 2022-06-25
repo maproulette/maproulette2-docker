@@ -1,5 +1,5 @@
-ARG NODE_TAG=12-bullseye
-ARG NGINX_TAG=1.21-alpine
+ARG NODE_TAG=14-bullseye
+ARG NGINX_TAG=1.23-alpine
 FROM node:${NODE_TAG} as builder
 
 ARG GIT="osmlab/maproulette3"
