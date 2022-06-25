@@ -1,14 +1,14 @@
 name: Pull Request Build
-on: [pull_request]
+on:
+  push:
+  pull_request:
+
 jobs:
   build-api:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-
-      - name: Build the api image
+      - uses: actions/checkout@v3
+      - name: Build the maproulette-api image for ubuntu-latest
         run: |
           cp ./api/application-overrides.template.conf ./api/application-overrides.conf
           ./deploy.sh --api LATEST --buildOnly --dbExternal
@@ -16,11 +16,8 @@ jobs:
   build-frontend:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-
-      - name: Build the frontend image
+      - uses: actions/checkout@v3
+      - name: Build the maproulette-frontend image for ubuntu-latest
         run: |
           cp ./frontend/env.template.production ./frontend/env.production
           ./deploy.sh --frontend LATEST --buildOnly
