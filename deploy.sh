@@ -46,17 +46,26 @@ set +u
 while true; do
     case "$1" in
         -f | --frontend)
+            # Parse the --frontend arguments. The optional parameters, frontendRelease and frontendGit, are unordered (and optional!).
+            # The frontendGit must start with 'git' (also, any frontendRelease branch with 'git' as the prefix cannot be used).
+            #
+            # For example the input could be:
+            # --frontend
+            # --frontend [frontendRelease]
+            # --frontend [frontendRelease] [frontendGit]
+            # --frontend [frontendGit]
+            # --frontend [frontendGit] [frontendRelease]
             frontend=true
-            if [[ "$2" =~ ^- ]]; then
-                shift
-                continue
-            fi
             while true; do
+                # If '--frontend' was provided and a next '--' option was found or no remaining options, means we're done.
+                if [[ "$2" =~ ^- ]] || [ -z $2 ]; then
+                    break
+                fi
                 if [[ "$2" =~ ^git ]]; then
                     frontendGit="$2"
                     shift
                     continue
-                elif [[ "$2" = "LATEST" ]] || [[ "$2" =~ ^[0-9v] ]]; then
+                else
                     frontendRelease="$2"
                     shift
                     continue
@@ -65,7 +74,7 @@ while true; do
             done
         ;;
         -a | --api)
-            # Parse the --api arguments. The optional paramters, apiRelease and apiGit, are unordered (and optional!).
+            # Parse the --api arguments. The optional parameters, apiRelease and apiGit, are unordered (and optional!).
             # The apiGit must start with 'git' (also, any apiRelease branch with 'git' as the prefix cannot be used).
             #
             # For example the input could be:
@@ -78,7 +87,6 @@ while true; do
             while true; do
                 # If '--api' was provided and a next '--' option was found or no remaining options, means we're done.
                 if [[ "$2" =~ ^- ]] || [ -z $2 ]; then
-                    echo "Arg is empty or starts with a dash"
                     break
                 fi
                 if [[ "$2" =~ ^git ]]; then

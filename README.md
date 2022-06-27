@@ -100,7 +100,7 @@ In this case all you need to do is set the server host to `host.docker.internal`
 
 **I want to only deploy the frontend but it is failing, why?**
 
-If the backend and frontend are deployed it will link the containers together so that they nginx configuration can route any connections to the api container correctly. However if you are only deploying the frontend container then the nginx configuration for that routing will be incorrect. This will cause failure in the creation of the frontend container. To fix this you need to modify the `nginx-config` file by updating the upstream api section to look like follows:
+If the backend and frontend are deployed it will link the containers together so that the nginx configuration can route any connections to the api container correctly. However if you are only deploying the frontend container then the nginx configuration for that routing will be incorrect. This will cause failure in the creation of the frontend container. To fix this you need to modify the `nginx-config` file by updating the upstream api section to look like follows:
 ```
 upstream api {
     server <API URL>:<API PORT>
