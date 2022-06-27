@@ -10,24 +10,34 @@ if [ -f "conf.sh" ]; then
     source conf.sh
 fi
 
+
 # Whether to deploy the frontend
 frontend=${frontend:-false}
+
 # What release of the frontend to deploy
 frontendRelease=${frontendRelease:-LATEST}
+
 # The Git location for the frontend
 frontendGit=${frontendGit:-"git:osmlab/maproulette3"}
+
 # Whether to deploy the API
 api=${api:-false}
-# What release of the API to deploy
+
+# The API repository's git branch or tag used for the release.
 apiRelease=${apiRelease:-LATEST}
-# The Git location for the API
+
+# The git location for the API
 apiGit=${apiGit:-"git:maproulette/maproulette2"}
+
 # Whether to wipe the docker database, start clean
 wipeDB=${wipeDB:-false}
+
 # Host port to expose the postgis database container. By default bind to localhost:5432 so that pgadmin is able to connect to the database via an ssh tunnel.
 dbPort=${dbPort:-"127.0.0.1:5432"}
+
 # Whether the database being used is external or not. If it is external than won't link and build the database images
 dbExternal=${dbExternal:-false}
+
 # Whether to just build the docker images and not deploy them
 buildOnly=${buildOnly:-false}
 
@@ -55,17 +65,27 @@ while true; do
             done
         ;;
         -a | --api)
+            # Parse the --api arguments. The optional paramters, apiRelease and apiGit, are unordered (and optional!).
+            # The apiGit must start with 'git' (also, any apiRelease branch with 'git' as the prefix cannot be used).
+            #
+            # For example the input could be:
+            # --api
+            # --api [apiRelease]
+            # --api [apiRelease] [apiGit]
+            # --api [apiGit]
+            # --api [apiGit] [apiRelease]
             api=true
-            if [[ $2 =~ ^- ]]; then
-                shift
-                continue
-            fi
             while true; do
+                # If '--api' was provided and a next '--' option was found or no remaining options, means we're done.
+                if [[ "$2" =~ ^- ]] || [ -z $2 ]; then
+                    echo "Arg is empty or starts with a dash"
+                    break
+                fi
                 if [[ "$2" =~ ^git ]]; then
                     apiGit="$2"
                     shift
                     continue
-                elif [[ "$2" = "LATEST" ]] || [[ "$2" =~ ^[0-9v] ]]; then
+                else
                     apiRelease="$2"
                     shift
                     continue
