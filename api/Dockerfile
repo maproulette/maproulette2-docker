@@ -7,18 +7,16 @@ ARG CACHEBUST=1
 ARG GIT="maproulette/maproulette2"
 ARG VERSION="LATEST"
 
+WORKDIR /working
+
 # This is based on mozilla docker-sbt https://github.com/mozilla/docker-sbt/blob/main/Dockerfile
 # Install sbt
 RUN \
-  mkdir /working/ && \
-  cd /working/ && \
   curl -L -o sbt-$SBT_VERSION.deb https://repo.scala-sbt.org/scalasbt/debian/sbt-$SBT_VERSION.deb && \
   dpkg -i sbt-$SBT_VERSION.deb && \
   rm sbt-$SBT_VERSION.deb && \
   apt-get update && \
-  apt-get install -y sbt && \
-  cd && \
-  rm -r /working/ && \
+  apt-get install --no-install-recommends -y sbt && \
   sbt sbtVersion
 
 RUN \
@@ -30,8 +28,8 @@ RUN \
     else \
         git clone --depth 1 --branch ${VERSION} https://github.com/${GIT}.git /maproulette-api ; \
     fi
-WORKDIR /maproulette-api
 
+WORKDIR /maproulette-api
 RUN \
     echo "\n\nBUILDING API COMMIT $(git rev-parse HEAD)\n\n" && \
     sbt evicted && \
@@ -55,7 +53,7 @@ COPY --from=builder --chown=1000:0 /MapRouletteAPI /MapRouletteAPI
 USER maproulette
 WORKDIR /MapRouletteAPI
 
-ADD --chown=1000:0 setupServer.sh /MapRouletteAPI/setupServer.sh
-ADD --chown=1000:0 application-overrides.conf /MapRouletteAPI/conf/application-overrides.conf
+COPY --chown=1000:0 setupServer.sh /MapRouletteAPI/setupServer.sh
+COPY --chown=1000:0 application-overrides.conf /MapRouletteAPI/conf/application-overrides.conf
 
 ENTRYPOINT ["./setupServer.sh"]

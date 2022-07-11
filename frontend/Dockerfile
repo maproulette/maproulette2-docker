@@ -8,7 +8,7 @@ ARG VERSION="LATEST"
 
 RUN \
     apt-get update && \
-    apt-get install -y \
+    apt-get install --no-install-recommends -y \
         jq \
         python2 \
     && \
@@ -27,8 +27,8 @@ RUN \
 WORKDIR /maproulette-frontend
 
 # This file is needed for the build process
-ADD env.production .env.production
-ADD customLayers.json ./src/customLayers.json
+COPY env.production .env.production
+COPY customLayers.json ./src/customLayers.json
 
 # Build the Maproulette Frontend
 ENV NODE_OPTIONS="--max-old-space-size=8192"
@@ -38,8 +38,8 @@ RUN \
 
 FROM nginx:${NGINX_TAG}
 
-ADD nginx-config /etc/nginx/sites-enabled/maproulette
-ADD nginx.conf /etc/nginx/nginx.conf
+COPY nginx-config /etc/nginx/sites-enabled/maproulette
+COPY nginx.conf /etc/nginx/nginx.conf
 RUN \
     apk --update-cache upgrade && \
     mkdir -p /etc/nginx/sites-enabled /var/www/maproulette
