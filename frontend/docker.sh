@@ -27,6 +27,10 @@ if [ "$VERSION" = "LATEST" ]; then
 fi
 
 echo "Building container image for MapRoulette frontend Version: $IMAGE_TAG, Repo: ${git[1]}"
-docker build -t maproulette/maproulette-frontend:"${IMAGE_TAG}" \
-        --build-arg VERSION="${VERSION}" --build-arg GIT="${git[1]}" \
-        --build-arg CACHEBUST="${CACHEBUST}" .
+docker build \
+    --pull \
+    -t maproulette/maproulette-frontend:"${IMAGE_TAG}" \
+    --build-arg VERSION="${VERSION}" \
+    --build-arg GIT="${git[1]}" \
+    --build-arg CACHEBUST="${CACHEBUST}" \
+    .
