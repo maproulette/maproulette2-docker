@@ -1,6 +1,5 @@
-ARG OPENJDK_JDK_TAG=11-bullseye # jdk version for compiling the source
-ARG OPENJDK_JRE_TAG=11-jre-bullseye # jre runtime, without the javac compiler, for running the jar
-FROM openjdk:${OPENJDK_JDK_TAG} as builder
+ARG TEMURIN_JDK_TAG=11
+FROM eclipse-temurin:${TEMURIN_JDK_TAG} as builder
 
 ARG SBT_VERSION=1.7.1
 ARG CACHEBUST=1
@@ -16,7 +15,7 @@ RUN \
   dpkg -i sbt-$SBT_VERSION.deb && \
   rm sbt-$SBT_VERSION.deb && \
   apt-get update && \
-  apt-get install --no-install-recommends -y sbt && \
+  apt-get install --no-install-recommends -y git sbt unzip && \
   sbt sbtVersion
 
 RUN \
@@ -36,7 +35,7 @@ RUN \
     sbt clean compile dist && \
     unzip -d / target/universal/MapRouletteAPI.zip
 
-FROM openjdk:${OPENJDK_JRE_TAG}
+FROM eclipse-temurin:${TEMURIN_JDK_TAG}
 
 # Runtime image needs to have the most up-to-date patches
 RUN \
