@@ -2,7 +2,7 @@ ARG OPENJDK_JDK_TAG=11-bullseye # jdk version for compiling the source
 ARG OPENJDK_JRE_TAG=11-jre-bullseye # jre runtime, without the javac compiler, for running the jar
 FROM openjdk:${OPENJDK_JDK_TAG} as builder
 
-ARG SBT_VERSION=1.6.2
+ARG SBT_VERSION=1.7.1
 ARG CACHEBUST=1
 ARG GIT="maproulette/maproulette2"
 ARG VERSION="LATEST"
