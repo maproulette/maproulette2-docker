@@ -12,7 +12,7 @@
 # frontendRelease=LATEST
 
 # The Git location for the frontend
-# frontendGit="git:osmlab/maproulette3"
+# frontendGit="git:maproulette/maproulette3"
 
 # Whether to deploy the API
 # api=false
