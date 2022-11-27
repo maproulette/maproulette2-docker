@@ -27,7 +27,7 @@ api=${api:-false}
 apiRelease=${apiRelease:-LATEST}
 
 # The git location for the API
-apiGit=${apiGit:-"git:maproulette/maproulette2"}
+apiGit=${apiGit:-"git:maproulette/maproulette-backend"}
 
 # Whether to wipe the docker database, start clean
 wipeDB=${wipeDB:-false}

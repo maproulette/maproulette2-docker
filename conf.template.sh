@@ -21,7 +21,7 @@
 # apiRelease=LATEST
 
 # The Git location for the API
-# apiGit="git:maproulette/maproulette2"
+# apiGit="git:maproulette/maproulette-backend"
 
 # Whether to wipe the docker database, start clean
 # wipeDB=false

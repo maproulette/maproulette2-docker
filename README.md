@@ -8,7 +8,7 @@ Docker image and deployment scripts for Map Roulette api, database and fronted. 
 ##### API
 There are a couple of required properties that you will need to setup prior to running `deploy.sh`.
 
-The main application configuration is located within the [maproulette2 repository as application.conf](https://github.com/maproulette/maproulette2/blob/dev/conf/application.conf), and the below will override the originals.
+The main application configuration is located within the [maproulette-backend repository as application.conf](https://github.com/maproulette/maproulette-backend/blob/dev/conf/application.conf), and the below will override the originals.
 
 To avoid accidentally checking in private keys, the `api/application-overrides.template.conf` file must be copied as `api/application-overrides.conf`, and at a minimum these settings need to be updated, look for the "CHANGE_ME" fields.
 
@@ -47,7 +47,7 @@ The script takes the following parameters:
 * **-a | --api [RELEASE_VERSION] [GIT]** - Deploys the backend container.
   * `RELEASE_VERSION` is optional and defaults to `LATEST`, using the latest trunk commit.
   * IMPORTANT NOTE: the frontend and backend have different release cycles and different versions. Be sure to use compatible versions of frontend and backend.
-  * `GIT` is optional and defaults to `git:maproulette/maproulette2`. `GIT` has the form `git:<GIT_ORGANIZATION>/<GIT_REPO>`. This is helpful to deploy forked MapRoulette projects from github.
+  * `GIT` is optional and defaults to `git:maproulette/maproulette-backend`. `GIT` has the form `git:<GIT_ORGANIZATION>/<GIT_REPO>`. This is helpful to deploy forked MapRoulette projects from github.
 * **--dbPort [PORT]** - The host system's port to use for the database, defaulting to `127.0.0.1:5432`.
 * **--wipeDB** - This option will stop, remove, and recreate the database container. As the database content is written to the local disk, and not to the container, the recreate of the database **does not destroy its data**.
 
@@ -84,7 +84,7 @@ Deploy everything
 
 Deploy the backend from a specific git repo using database port 5301
 
-`./deploy.sh -a customrepo/maproulette2.git --dbPort 5301`
+`./deploy.sh -a customrepo/maproulette-backend.git --dbPort 5301`
 
 The ordering of your flags does not matter.
 
