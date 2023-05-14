@@ -1,7 +1,7 @@
 ARG TEMURIN_JDK_TAG=11
 FROM eclipse-temurin:${TEMURIN_JDK_TAG} as builder
 
-ARG SBT_VERSION=1.7.1
+ARG SBT_VERSION=1.7.2
 ARG CACHEBUST=1
 ARG GIT="maproulette/maproulette-backend"
 ARG VERSION="LATEST"
