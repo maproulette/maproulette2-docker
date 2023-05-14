@@ -3,7 +3,7 @@ FROM eclipse-temurin:${TEMURIN_JDK_TAG} as builder
 
 ARG SBT_VERSION=1.7.1
 ARG CACHEBUST=1
-ARG GIT="maproulette/maproulette2"
+ARG GIT="maproulette/maproulette-backend"
 ARG VERSION="LATEST"
 
 WORKDIR /working

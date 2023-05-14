@@ -18,7 +18,7 @@ frontend=${frontend:-false}
 frontendRelease=${frontendRelease:-LATEST}
 
 # The Git location for the frontend
-frontendGit=${frontendGit:-"git:osmlab/maproulette3"}
+frontendGit=${frontendGit:-"git:maproulette/maproulette3"}
 
 # Whether to deploy the API
 api=${api:-false}
@@ -27,7 +27,7 @@ api=${api:-false}
 apiRelease=${apiRelease:-LATEST}
 
 # The git location for the API
-apiGit=${apiGit:-"git:maproulette/maproulette2"}
+apiGit=${apiGit:-"git:maproulette/maproulette-backend"}
 
 # Whether to wipe the docker database, start clean
 wipeDB=${wipeDB:-false}

@@ -8,7 +8,7 @@ Docker image and deployment scripts for Map Roulette api, database and fronted. 
 ##### API
 There are a couple of required properties that you will need to setup prior to running `deploy.sh`.
 
-The main application configuration is located within the [maproulette2 repository as application.conf](https://github.com/maproulette/maproulette2/blob/dev/conf/application.conf), and the below will override the originals.
+The main application configuration is located within the [maproulette-backend repository as application.conf](https://github.com/maproulette/maproulette-backend/blob/dev/conf/application.conf), and the below will override the originals.
 
 To avoid accidentally checking in private keys, the `api/application-overrides.template.conf` file must be copied as `api/application-overrides.conf`, and at a minimum these settings need to be updated, look for the "CHANGE_ME" fields.
 
@@ -20,7 +20,7 @@ To avoid accidentally checking in private keys, the `api/application-overrides.t
 * **maproulette.bootstrap** - Set this to `true` when you build a new MapRoulette API with a new database.
 
 ##### Frontend
-The frontend requires certain properties to be updated as well. The main configuration is located within the [maproulette3 repository as .env](https://github.com/osmlab/maproulette3/blob/main/.env), and the below will override the originals.
+The frontend requires certain properties to be updated as well. The main configuration is located within the [maproulette3 repository as .env](https://github.com/maproulette/maproulette3/blob/main/.env), and the below will override the originals.
 
 To avoid accidentally checking in private data, the `frontend/env.template.production` file must be copied as `frontend/env.production`, and updated as necessary.
 
@@ -30,7 +30,7 @@ The env.template.production assume that it is pointing to an instance of the Map
 * **REACT_APP_URL** - This is the root url for the MapRoulette frontend App. By default it is localhost:3000, the reason for this is that it is generally advisable to front these services with a http server like nginx or Apache webserver. And those web servers would then just proxy requests on port 80 to port 3000. But if you don't need certain features you can change this to port 80 instead and not have it fronted by a web server.
 * **REACT_APP_MAP_ROULETTE_SERVER_URL** - This is the root server url for the MapRoulette backend. By default the MapRoulette backend will startup on port 9000, but if you are pointing to an instance that has started up on a different port you can change that here.
 
-Custom map layers are supported and documented within the [maproulette3 repository](https://github.com/osmlab/maproulette3#adding-additional-and-custom-map-layers).
+Custom map layers are supported and documented within the [maproulette3 repository](https://github.com/maproulette/maproulette3#adding-additional-and-custom-map-layers).
 If the `frontend/customLayers.json` file does not exist, the deploy script will create the file with content `[]`.
 
 ### Running deploy.sh
@@ -43,11 +43,11 @@ The script takes the following parameters:
 
 * **-f | --frontend [RELEASE_VERSION] [GIT]** - Deploys the frontend container.
   * `RELEASE_VERSION` is optional and defaults to `LATEST`, using the latest trunk commit.
-  * `GIT` is optional and defaults to `git:osmlab/maproulette3`. `GIT` has the form `git:<GIT_ORGANIZATION>/<GIT_REPO>`. This is helpful to deploy forked MapRoulette projects from github.
+  * `GIT` is optional and defaults to `git:maproulette/maproulette3`. `GIT` has the form `git:<GIT_ORGANIZATION>/<GIT_REPO>`. This is helpful to deploy forked MapRoulette projects from github.
 * **-a | --api [RELEASE_VERSION] [GIT]** - Deploys the backend container.
   * `RELEASE_VERSION` is optional and defaults to `LATEST`, using the latest trunk commit.
   * IMPORTANT NOTE: the frontend and backend have different release cycles and different versions. Be sure to use compatible versions of frontend and backend.
-  * `GIT` is optional and defaults to `git:maproulette/maproulette2`. `GIT` has the form `git:<GIT_ORGANIZATION>/<GIT_REPO>`. This is helpful to deploy forked MapRoulette projects from github.
+  * `GIT` is optional and defaults to `git:maproulette/maproulette-backend`. `GIT` has the form `git:<GIT_ORGANIZATION>/<GIT_REPO>`. This is helpful to deploy forked MapRoulette projects from github.
 * **--dbPort [PORT]** - The host system's port to use for the database, defaulting to `127.0.0.1:5432`.
 * **--wipeDB** - This option will stop, remove, and recreate the database container. As the database content is written to the local disk, and not to the container, the recreate of the database **does not destroy its data**.
 
@@ -84,7 +84,7 @@ Deploy everything
 
 Deploy the backend from a specific git repo using database port 5301
 
-`./deploy.sh -a customrepo/maproulette2.git --dbPort 5301`
+`./deploy.sh -a customrepo/maproulette-backend.git --dbPort 5301`
 
 The ordering of your flags does not matter.
 

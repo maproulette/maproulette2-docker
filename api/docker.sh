@@ -16,7 +16,7 @@ fi
 
 cd api
 if [ "$VERSION" = "LATEST" ]; then
-    CACHEBUST=$(git ls-remote https://github.com/maproulette/maproulette2.git | grep HEAD | cut -f 1)
+    CACHEBUST=$(git ls-remote https://github.com/maproulette/maproulette-backend.git | grep HEAD | cut -f 1)
 fi
 
 echo "Building container image for MapRoulette API Version: $IMAGE_TAG, Repo: ${git[1]}"
