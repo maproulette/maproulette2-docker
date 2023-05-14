@@ -1,5 +1,5 @@
 ARG NODE_TAG=14-bullseye
-ARG NGINX_TAG=1.23-alpine
+ARG NGINX_TAG=1.24-alpine
 FROM node:${NODE_TAG} as builder
 
 ARG GIT="maproulette/maproulette3"
