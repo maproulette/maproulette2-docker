@@ -19,5 +19,5 @@ docker run \
   --name maproulette-frontend \
   --network mrnet \
   --restart unless-stopped \
-  -p 3000:80 \
+  -p 3000:3000 \
   maproulette/maproulette-frontend:"${IMAGE_TAG}"
