@@ -2,8 +2,8 @@ upstream api {
     server maproulette-api:9000;
 }
 server {
-    listen 80 default_server;
-    listen [::]:80;
+    listen 3000 default_server;
+    listen [::]:3000;
 
     client_max_body_size 100M;
     rewrite ^/mr3/?(.*)$ /$1 permanent;
