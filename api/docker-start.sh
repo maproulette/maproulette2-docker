@@ -14,7 +14,7 @@ fi
 
 echo "Starting maproulette api container"
 docker run \
-  -itd \
+  -d \
   --name maproulette-api \
   --network mrnet \
   --restart unless-stopped \
