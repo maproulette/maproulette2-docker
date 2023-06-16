@@ -4,6 +4,7 @@ set -exuo pipefail
 
 # Print usage information if -h or --help flags are used
 if [[ $1 == "-h" ]] || [[ $1 == "--help" ]]; then
+    set +x
     echo "Usage: ./deploy.sh [OPTION]..."
     echo "Automated script for deploying the MapRoulette application with frontend, API, and PostGIS database."
     echo ""
@@ -20,6 +21,7 @@ if [[ $1 == "-h" ]] || [[ $1 == "--help" ]]; then
     echo "  --wipeDB             Optional. Wipe the Docker database. Default: false."
     echo "  --dbExternal         Optional. Specify if the database is external. Default: false."
     echo "  --buildOnly          Optional. Specify if only build the Docker images without deploying them. Default: false."
+    echo "  --useHostNetwork     Optional. Use host network for Docker. Default: false."
     echo "  -h, --help           Display this help and exit."
     exit 0
 fi
@@ -50,6 +52,9 @@ apiRelease=${apiRelease:-LATEST}
 
 # The git location for the API
 apiGit=${apiGit:-"git:maproulette/maproulette-backend"}
+
+# Whether the docker containers should use the host network
+useHostNetwork=${useHostNetwork:-false}
 
 # Whether to wipe the docker database, start clean
 wipeDB=${wipeDB:-false}
@@ -123,6 +128,9 @@ while true; do
                 break
             done
         ;;
+        --useHostNetwork)
+            useHostNetwork=true
+        ;;
         --dbPort)
             dbPort="$2"
             shift
@@ -143,6 +151,8 @@ while true; do
     shift
 done
 set -u
+
+export USE_HOST_NETWORK="$useHostNetwork"
 
 echo "Building MR Network"
 docker network create --driver bridge mrnet || true
