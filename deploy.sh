@@ -2,6 +2,28 @@
 
 set -exuo pipefail
 
+# Print usage information if -h or --help flags are used
+if [[ $1 == "-h" ]] || [[ $1 == "--help" ]]; then
+    echo "Usage: ./deploy.sh [OPTION]..."
+    echo "Automated script for deploying the MapRoulette application with frontend, API, and PostGIS database."
+    echo ""
+    echo "Options:"
+    echo "  -f, --frontend       Optional. Deploy the frontend. Default: false."
+    echo "                       Optionally specify [frontendRelease] and [frontendGit]."
+    echo "                       [frontendRelease] can be a git branch, tag, or commit id. Default: LATEST."
+    echo "                       [frontendGit] is the Git location for the frontend. Default: git:maproulette/maproulette3."
+    echo "  -a, --api            Optional. Deploy the API. Default: false."
+    echo "                       Optionally specify [apiRelease] and [apiGit]."
+    echo "                       [apiRelease] can be a git branch, tag, or commit id. Default: LATEST."
+    echo "                       [apiGit] is the Git location for the API. Default: git:maproulette/maproulette-backend."
+    echo "  --dbPort             Optional. Specify the database port for the docker postgis container. Default: 127.0.0.1:5432."
+    echo "  --wipeDB             Optional. Wipe the Docker database. Default: false."
+    echo "  --dbExternal         Optional. Specify if the database is external. Default: false."
+    echo "  --buildOnly          Optional. Specify if only build the Docker images without deploying them. Default: false."
+    echo "  -h, --help           Display this help and exit."
+    exit 0
+fi
+
 # If there is a conf.sh, include it to override any of the below variables.
 # Note that any commandline overrides will take precedence.
 if [ -f "conf.sh" ]; then
