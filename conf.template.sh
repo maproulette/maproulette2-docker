@@ -23,6 +23,9 @@
 # The Git location for the API
 # apiGit="git:maproulette/maproulette-backend"
 
+# Whether the docker containers should use the host network
+# useHostNetwork=false
+
 # Whether to wipe the docker database, start clean
 # wipeDB=false
 
