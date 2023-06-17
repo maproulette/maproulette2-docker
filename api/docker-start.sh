@@ -7,9 +7,9 @@ export VERSION=$1
 export IMAGE_TAG=${VERSION//\//-}
 
 if [[ "${USE_HOST_NETWORK}" == "true" ]]; then
-  dockerNetworkArg="--network=host"
+  dockerNetworkArg=(--network=host)
 else
-  dockerNetworkArg="--network mrnet -p 9000:9000"
+  dockerNetworkArg=(--network mrnet -p 9000:9000)
 fi
 
 if [ "$(docker ps -qa -f name=maproulette-api)" ]; then
@@ -21,7 +21,7 @@ fi
 echo "Starting maproulette api container"
 docker run \
   -d \
-  "${dockerNetworkArg}" \
+  "${dockerNetworkArg[@]}" \
   --name maproulette-api \
   --restart unless-stopped \
   maproulette/maproulette-api:"${IMAGE_TAG}"

@@ -22,7 +22,7 @@ fi
 echo "Starting maproulette frontend container"
 docker run \
   -d \
-  "${dockerNetworkArg}" \
+  "${dockerNetworkArg[@]}" \
   --name maproulette-frontend \
   --restart unless-stopped \
   maproulette/maproulette-frontend:"${IMAGE_TAG}"
