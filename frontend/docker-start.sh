@@ -8,9 +8,9 @@ export VERSION=${VERSION:-$1}
 export IMAGE_TAG=${VERSION//\//-}
 
 if [[ "${USE_HOST_NETWORK}" == "true" ]]; then
-  dockerNetworkArg="--network=host"
+  dockerNetworkArg=(--network=host)
 else
-  dockerNetworkArg="--network mrnet -p 3000:3000"
+  dockerNetworkArg=(--network mrnet -p 3000:3000)
 fi
 
 if [ "$(docker ps -qa -f name=maproulette-frontend)" ]; then
