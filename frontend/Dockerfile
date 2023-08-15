@@ -1,4 +1,4 @@
-ARG NODE_TAG=14-bullseye
+ARG NODE_TAG=16-bullseye
 ARG NGINX_TAG=1.24-alpine
 FROM node:${NODE_TAG} as builder
 
