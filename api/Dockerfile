@@ -1,7 +1,7 @@
 ARG TEMURIN_JDK_TAG=11
-FROM eclipse-temurin:${TEMURIN_JDK_TAG} as builder
+FROM docker.io/library/eclipse-temurin:${TEMURIN_JDK_TAG} as builder
 
-ARG SBT_VERSION=1.7.2
+ARG SBT_VERSION=1.9.7
 ARG CACHEBUST=1
 ARG GIT="maproulette/maproulette-backend"
 ARG VERSION="LATEST"
@@ -35,7 +35,7 @@ RUN \
     sbt clean compile dist && \
     unzip -d / target/universal/MapRouletteAPI.zip
 
-FROM eclipse-temurin:${TEMURIN_JDK_TAG}
+FROM docker.io/library/eclipse-temurin:${TEMURIN_JDK_TAG}
 
 # Runtime image needs to have the most up-to-date patches
 RUN \

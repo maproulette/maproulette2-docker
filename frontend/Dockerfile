@@ -1,6 +1,6 @@
-ARG NODE_TAG=16-bullseye
-ARG NGINX_TAG=1.24-alpine
-FROM node:${NODE_TAG} as builder
+ARG NODE_TAG=18-bullseye
+ARG NGINX_TAG=1.25-alpine
+FROM docker.io/library/node:${NODE_TAG} as builder
 
 ARG GIT="maproulette/maproulette3"
 ARG CACHEBUST=2
@@ -33,10 +33,10 @@ COPY customLayers.json ./src/customLayers.json
 # Build the Maproulette Frontend
 ENV NODE_OPTIONS="--max-old-space-size=8192"
 RUN \
-    yarn && \
-    yarn run build
+    yarn --network-timeout 100000 && \
+    yarn --network-timeout 100000 run build
 
-FROM nginx:${NGINX_TAG}
+FROM docker.io/library/nginx:${NGINX_TAG}
 
 COPY nginx-config /etc/nginx/sites-enabled/maproulette
 COPY nginx.conf /etc/nginx/nginx.conf
