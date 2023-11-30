@@ -177,6 +177,7 @@ if [[ "$api" = true ]]; then
         else
             # The mr-postgis container does not exist. Create and run it.
             echo "Running new mr-postgis container"
+            mkdir -p postgres-data
             docker run \
                 -d \
                 -p "$dbPort":5432 \
@@ -188,7 +189,7 @@ if [[ "$api" = true ]]; then
                 -e POSTGRES_USER=mrdbuser \
                 -e POSTGRES_PASSWORD=mrdbpass \
                 --volume "$(pwd)/postgres-data":/var/lib/postgresql/data \
-                postgis/postgis:11-2.5
+                postgis/postgis:13-3.3
         fi
     fi
 
