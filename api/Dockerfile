@@ -30,7 +30,7 @@ RUN \
 
 WORKDIR /maproulette-api
 RUN \
-    echo "\n\nBUILDING API COMMIT $(git rev-parse HEAD)\n\n" && \
+    echo "\n\nBUILDING API VERSION=${VERSION} COMMIT=$(git rev-parse HEAD)\n\n" && \
     sbt evicted && \
     sbt clean compile dist && \
     unzip -d / target/universal/MapRouletteAPI.zip

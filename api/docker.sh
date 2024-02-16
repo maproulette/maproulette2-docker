@@ -3,7 +3,7 @@
 set -exuo pipefail
 
 export VERSION=$1
-# Git branches may contains forward slashes and that don't work with docker. Replace any slashes with a dash.
+# Git branches may contains forward slashes and that doesn't work with container image tagging. Replace any slashes with a dash.
 export IMAGE_TAG=${VERSION//\//-}
 git=(${2//:/ })
 CACHEBUST=${VERSION}
