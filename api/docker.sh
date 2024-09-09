@@ -22,6 +22,7 @@ fi
 echo "Building container image for MapRoulette API Version: $IMAGE_TAG, Repo: ${git[1]}"
 docker build \
     --pull \
+    --no-cache \
     -t maproulette/maproulette-api:"${IMAGE_TAG}" \
     --build-arg VERSION="${VERSION}" \
     --build-arg GIT="${git[1]}" \
