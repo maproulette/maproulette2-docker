@@ -1,7 +1,7 @@
-ARG TEMURIN_JDK_TAG=11
-FROM docker.io/library/eclipse-temurin:${TEMURIN_JDK_TAG} as builder
+ARG TEMURIN_JDK_TAG=17
+FROM docker.io/library/eclipse-temurin:${TEMURIN_JDK_TAG} AS builder
 
-ARG SBT_VERSION=1.9.7
+ARG SBT_VERSION=1.9.9
 ARG CACHEBUST=1
 ARG GIT="maproulette/maproulette-backend"
 ARG VERSION="LATEST"
@@ -43,16 +43,16 @@ RUN \
     DEBIAN_FRONTEND=noninteractive apt-get upgrade -y && \
     rm -rf /var/lib/apt/lists/*
 RUN \
-    groupadd -g 1000 maproulette && \
-    useradd --uid 1000 --gid 1000 --groups 0 --create-home --home-dir /MapRouletteAPI maproulette && \
+    groupadd -g 1001 maproulette && \
+    useradd --uid 1001 --gid 1001 --groups 0 --create-home --home-dir /MapRouletteAPI maproulette && \
     chmod 0775 /MapRouletteAPI && \
-    chown -R 1000:0 /MapRouletteAPI
+    chown -R 1001:0 /MapRouletteAPI
 
-COPY --from=builder --chown=1000:0 /MapRouletteAPI /MapRouletteAPI
+COPY --from=builder --chown=1001:0 /MapRouletteAPI /MapRouletteAPI
 USER maproulette
 WORKDIR /MapRouletteAPI
 
-COPY --chown=1000:0 setupServer.sh /MapRouletteAPI/setupServer.sh
-COPY --chown=1000:0 application-overrides.conf /MapRouletteAPI/conf/application-overrides.conf
+COPY --chown=1001:0 setupServer.sh /MapRouletteAPI/setupServer.sh
+COPY --chown=1001:0 application-overrides.conf /MapRouletteAPI/conf/application-overrides.conf
 
 ENTRYPOINT ["./setupServer.sh"]
