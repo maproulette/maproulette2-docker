@@ -43,7 +43,7 @@ COPY nginx.conf /etc/nginx/nginx.conf
 RUN \
     apk --update-cache upgrade && \
     mkdir -p /etc/nginx/sites-enabled /var/www/maproulette
-COPY --from=builder /maproulette-frontend/build /var/www/maproulette
+COPY --from=builder /maproulette-frontend/dist /var/www/maproulette
 
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
