@@ -27,7 +27,7 @@ RUN \
 WORKDIR /maproulette-frontend
 
 # This file is needed for the build process
-COPY env.production .env.production
+COPY env.production .env.local
 COPY customLayers.json ./src/customLayers.json
 
 # Build the Maproulette Frontend
