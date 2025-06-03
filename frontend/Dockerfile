@@ -32,9 +32,8 @@ COPY customLayers.json ./src/customLayers.json
 
 # Build the Maproulette Frontend
 ENV NODE_OPTIONS="--max-old-space-size=8192"
-RUN \
-    yarn --network-timeout 100000 && \
-    yarn --network-timeout 100000 run build
+RUN npm install
+RUN npm run build
 
 FROM docker.io/library/nginx:${NGINX_TAG}
 
