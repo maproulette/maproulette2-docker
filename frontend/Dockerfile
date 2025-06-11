@@ -1,4 +1,4 @@
-ARG NODE_TAG=18-bullseye
+ARG NODE_TAG=22-bullseye
 ARG NGINX_TAG=1.25-alpine
 FROM docker.io/library/node:${NODE_TAG} as builder
 
