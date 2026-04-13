@@ -3,20 +3,20 @@
 set -exuo pipefail
 
 export VERSION=$1
-# Git branches may contains forward slashes and that doesn't work with container image tagging. Replace any slashes with a dash.
+# Git branches may contain forward slashes, which aren't valid in image tags.
 export IMAGE_TAG=${VERSION//\//-}
 git=(${2//:/ })
 CACHEBUST=${VERSION}
 
-if [ ! -f "api/application-overrides.conf" ]; then
-    echo "File api/application-overrides.conf does not exist!" >&2
-    echo "Copy api/application-overrides.template.conf and rename it as api/application-overrides.conf, and override as necessary." >&2
+if [ ! -f ".env" ]; then
+    echo "File .env does not exist!" >&2
+    echo "Copy .env.template to .env at the repo root and fill in the values." >&2
     exit 1
 fi
 
 cd api
 if [ "$VERSION" = "LATEST" ]; then
-    CACHEBUST=$(git ls-remote https://github.com/maproulette/maproulette-backend.git | grep HEAD | cut -f 1)
+    CACHEBUST=$(git ls-remote "https://github.com/${git[1]}.git" | grep HEAD | cut -f 1)
 fi
 
 echo "Building container image for MapRoulette API Version: $IMAGE_TAG, Repo: ${git[1]}"

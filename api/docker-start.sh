@@ -3,7 +3,6 @@
 set -exuo pipefail
 
 export VERSION=$1
-# Git branches may contains forward slashes and that don't work with docker. Replace any slashes with a dash.
 export IMAGE_TAG=${VERSION//\//-}
 
 if [[ "${USE_HOST_NETWORK}" == "true" ]]; then
@@ -18,10 +17,19 @@ if [ "$(docker ps -qa -f name=maproulette-api)" ]; then
   docker rm maproulette-api
 fi
 
+# Persist the @fastify/secure-session key across container restarts. Generated
+# on first boot by setupServer.sh if the file is empty.
+mkdir -p maproulette-secret
+if [ ! -f maproulette-secret/secret-key ]; then
+  touch maproulette-secret/secret-key
+fi
+
 echo "Starting maproulette api container"
 docker run \
   -d \
   "${dockerNetworkArg[@]}" \
   --name maproulette-api \
   --restart unless-stopped \
+  --env-file .env \
+  --volume "$(pwd)/maproulette-secret/secret-key":/app/backend/secret-key \
   maproulette/maproulette-api:"${IMAGE_TAG}"

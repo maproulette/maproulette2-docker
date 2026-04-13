@@ -2,131 +2,70 @@
 
 set -exuo pipefail
 
-# Print usage information if -h or --help flags are used
-if [[ $1 == "-h" ]] || [[ $1 == "--help" ]]; then
+if [[ ${1:-} == "-h" ]] || [[ ${1:-} == "--help" ]]; then
     set +x
     echo "Usage: ./deploy.sh [OPTION]..."
-    echo "Automated script for deploying the MapRoulette application with frontend, API, and PostGIS database."
+    echo "Build and deploy the MapRoulette monorepo (frontend, API, and PostGIS database)."
+    echo ""
+    echo "Both the API and frontend are built from the same monorepo clone, so they share"
+    echo "the --release and --git flags below."
     echo ""
     echo "Options:"
-    echo "  -f, --frontend       Optional. Deploy the frontend. Default: false."
-    echo "                       Optionally specify [frontendRelease] and [frontendGit]."
-    echo "                       [frontendRelease] can be a git branch, tag, or commit id. Default: LATEST."
-    echo "                       [frontendGit] is the Git location for the frontend. Default: git:maproulette/maproulette3."
-    echo "  -a, --api            Optional. Deploy the API. Default: false."
-    echo "                       Optionally specify [apiRelease] and [apiGit]."
-    echo "                       [apiRelease] can be a git branch, tag, or commit id. Default: LATEST."
-    echo "                       [apiGit] is the Git location for the API. Default: git:maproulette/maproulette-backend."
-    echo "  --dbPort             Optional. Specify the database port for the docker postgis container. Default: 127.0.0.1:5432."
-    echo "  --wipeDB             Optional. Wipe the Docker database. Default: false."
-    echo "  --dbExternal         Optional. Specify if the database is external. Default: false."
-    echo "  --buildOnly          Optional. Specify if only build the Docker images without deploying them. Default: false."
-    echo "  --useHostNetwork     Optional. Use host network for Docker. Default: false."
+    echo "  -f, --frontend       Deploy the frontend container. Default: false."
+    echo "  -a, --api            Deploy the API container. Default: false."
+    echo "  -r, --release VER    Git branch, tag, or commit id to build. Default: LATEST."
+    echo "  -g, --git ORG/REPO   Source repository. Default: maproulette/maproulette4."
+    echo "  --dbPort PORT        Host port for the postgis container. Default: 127.0.0.1:5432."
+    echo "  --wipeDB             Stop and recreate the postgis container. Default: false."
+    echo "  --dbExternal         The database is external — don't manage a postgis container."
+    echo "  --buildOnly          Build images but do not start containers. Default: false."
+    echo "  --useHostNetwork     Use host networking for all containers. Default: false."
     echo "  -h, --help           Display this help and exit."
     exit 0
 fi
 
 # If there is a conf.sh, include it to override any of the below variables.
-# Note that any commandline overrides will take precedence.
+# Commandline overrides take precedence.
 if [ -f "conf.sh" ]; then
     echo "Using variables from conf.sh"
     # shellcheck source=/dev/null
     source conf.sh
 fi
 
-
-# Whether to deploy the frontend
 frontend=${frontend:-false}
-
-# What release of the frontend to deploy
-frontendRelease=${frontendRelease:-LATEST}
-
-# The Git location for the frontend
-frontendGit=${frontendGit:-"git:maproulette/maproulette3"}
-
-# Whether to deploy the API
 api=${api:-false}
 
-# The API repository's git branch or tag used for the release.
-apiRelease=${apiRelease:-LATEST}
+# A single release + git pair is used for both the api and frontend builds —
+# they live in the same monorepo now.
+release=${release:-LATEST}
+git=${git:-"git:maproulette/maproulette4"}
 
-# The git location for the API
-apiGit=${apiGit:-"git:maproulette/maproulette-backend"}
-
-# Whether the docker containers should use the host network
 useHostNetwork=${useHostNetwork:-false}
-
-# Whether to wipe the docker database, start clean
 wipeDB=${wipeDB:-false}
-
-# Host port to expose the postgis database container. By default bind to localhost:5432 so that pgadmin is able to connect to the database via an ssh tunnel.
 dbPort=${dbPort:-"127.0.0.1:5432"}
-
-# Whether the database being used is external or not. If it is external than won't link and build the database images
 dbExternal=${dbExternal:-false}
-
-# Whether to just build the docker images and not deploy them
 buildOnly=${buildOnly:-false}
 
-# Allow unset varaibles to be used while setting arguments
 set +u
 while true; do
     case "$1" in
         -f | --frontend)
-            # Parse the --frontend arguments. The optional parameters, frontendRelease and frontendGit, are unordered (and optional!).
-            # The frontendGit must start with 'git' (also, any frontendRelease branch with 'git' as the prefix cannot be used).
-            #
-            # For example the input could be:
-            # --frontend
-            # --frontend [frontendRelease]
-            # --frontend [frontendRelease] [frontendGit]
-            # --frontend [frontendGit]
-            # --frontend [frontendGit] [frontendRelease]
             frontend=true
-            while true; do
-                # If '--frontend' was provided and a next '--' option was found or no remaining options, means we're done.
-                if [[ "$2" =~ ^- ]] || [ -z $2 ]; then
-                    break
-                fi
-                if [[ "$2" =~ ^git ]]; then
-                    frontendGit="$2"
-                    shift
-                    continue
-                else
-                    frontendRelease="$2"
-                    shift
-                    continue
-                fi
-                break
-            done
         ;;
         -a | --api)
-            # Parse the --api arguments. The optional parameters, apiRelease and apiGit, are unordered (and optional!).
-            # The apiGit must start with 'git' (also, any apiRelease branch with 'git' as the prefix cannot be used).
-            #
-            # For example the input could be:
-            # --api
-            # --api [apiRelease]
-            # --api [apiRelease] [apiGit]
-            # --api [apiGit]
-            # --api [apiGit] [apiRelease]
             api=true
-            while true; do
-                # If '--api' was provided and a next '--' option was found or no remaining options, means we're done.
-                if [[ "$2" =~ ^- ]] || [ -z $2 ]; then
-                    break
-                fi
-                if [[ "$2" =~ ^git ]]; then
-                    apiGit="$2"
-                    shift
-                    continue
-                else
-                    apiRelease="$2"
-                    shift
-                    continue
-                fi
-                break
-            done
+        ;;
+        -r | --release)
+            release="$2"
+            shift
+        ;;
+        -g | --git)
+            if [[ "$2" =~ ^git ]]; then
+                git="$2"
+            else
+                git="git:$2"
+            fi
+            shift
         ;;
         --useHostNetwork)
             useHostNetwork=true
@@ -154,28 +93,36 @@ set -u
 
 export USE_HOST_NETWORK="$useHostNetwork"
 
+if [[ "$api" != true && "$frontend" != true ]]; then
+    echo "Nothing to do — pass --api and/or --frontend." >&2
+    exit 1
+fi
+
+if [ ! -f ".env" ]; then
+    echo "File .env does not exist!" >&2
+    echo "Copy .env.template to .env at the repo root and fill in the values." >&2
+    exit 1
+fi
+
 echo "Building MR Network"
 docker network create --driver bridge mrnet || true
-echo "API: $api $apiRelease $apiGit"
-echo "FRONTEND: $frontend $frontendRelease $frontendGit"
+echo "RELEASE: $release  GIT: $git"
+echo "API: $api  FRONTEND: $frontend"
+
 if [[ "$api" = true ]]; then
     if [[ "$dbExternal" != true ]]; then
         echo "Deploying mr-postgis database container..."
 
-        # If wipeDB is true and the mr-postgis container exists (running or stopped), then stop and remove the container
         if [[ "$wipeDB" == true && "$(docker ps -qa -f name=mr-postgis)" ]]; then
             echo "Removing mr-postgis container"
             docker stop mr-postgis
             docker rm mr-postgis
         fi
 
-        # If the container named mr-postgis exists (running or stopped), then start it
         if [ "$(docker ps -qa -f name=mr-postgis)" ]; then
             echo "Starting the existing mr-postgis container"
-            # NOTE: Starting an already-running container is not an error
             docker start mr-postgis
         else
-            # The mr-postgis container does not exist. Create and run it.
             echo "Running new mr-postgis container"
             mkdir -p postgres-data
             docker run \
@@ -189,29 +136,28 @@ if [[ "$api" = true ]]; then
                 -e POSTGRES_USER=mrdbuser \
                 -e POSTGRES_PASSWORD=mrdbpass \
                 --volume "$(pwd)/postgres-data":/var/lib/postgresql/data \
-                postgis/postgis:13-3.3
+                postgis/postgis:17-3.5
         fi
     fi
 
     echo "Building api docker image..."
-    ./api/docker.sh "$apiRelease" "$apiGit"
+    ./api/docker.sh "$release" "$git"
 fi
 
 if [[ "$frontend" = true ]]; then
     echo "Building frontend docker image..."
-    ./frontend/docker.sh "$frontendRelease" "$frontendGit"
+    ./frontend/docker.sh "$release" "$git"
 fi
 
-# Deploy the docker images
 if [[ "$api" = true && "$buildOnly" = false ]]; then
     echo "Deploying api..."
-    ./api/docker-start.sh "$apiRelease"
+    ./api/docker-start.sh "$release"
     sleep 10
 fi
 
 if [[ "$frontend" = true && "$buildOnly" = false ]]; then
     echo "Deploying frontend..."
-    ./frontend/docker-start.sh "$frontendRelease"
+    ./frontend/docker-start.sh "$release"
 fi
 
 echo "Deployment Complete!"

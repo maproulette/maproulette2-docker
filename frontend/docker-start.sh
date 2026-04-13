@@ -2,9 +2,7 @@
 
 set -exuo pipefail
 
-# The VERSION can be set with an environment variable. If it's not set, use $1
 export VERSION=${VERSION:-$1}
-# Git branches may contains forward slashes and that don't work with docker. Replace any slashes with a dash.
 export IMAGE_TAG=${VERSION//\//-}
 
 if [[ "${USE_HOST_NETWORK}" == "true" ]]; then

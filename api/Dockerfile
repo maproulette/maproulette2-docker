@@ -1,58 +1,63 @@
-ARG TEMURIN_JDK_TAG=17
-FROM docker.io/library/eclipse-temurin:${TEMURIN_JDK_TAG} AS builder
+ARG NODE_TAG=22-bullseye
+FROM docker.io/library/node:${NODE_TAG} AS builder
 
-ARG SBT_VERSION=1.9.9
+ARG GIT="maproulette/maproulette4"
 ARG CACHEBUST=1
-ARG GIT="maproulette/maproulette-backend"
 ARG VERSION="LATEST"
 
-WORKDIR /working
-
-# This is based on mozilla docker-sbt https://github.com/mozilla/docker-sbt/blob/main/Dockerfile
-# Install sbt
 RUN \
-  curl -L -o sbt-$SBT_VERSION.deb https://repo.scala-sbt.org/scalasbt/debian/sbt-$SBT_VERSION.deb && \
-  dpkg -i sbt-$SBT_VERSION.deb && \
-  rm sbt-$SBT_VERSION.deb && \
-  apt-get update && \
-  apt-get install --no-install-recommends -y git sbt unzip && \
-  sbt sbtVersion
+    apt-get update && \
+    apt-get install --no-install-recommends -y git && \
+    rm -rf /var/lib/apt/lists/*
 
 RUN \
     echo "${GIT}" && \
     echo "${CACHEBUST}" && \
     echo "${VERSION}" && \
     if [ "${VERSION}" = "LATEST" ]; then \
-        git clone --depth 1 https://github.com/${GIT}.git /maproulette-api ; \
+        git clone --depth 1 https://github.com/${GIT}.git /maproulette ; \
     else \
-        git clone --depth 1 --branch ${VERSION} https://github.com/${GIT}.git /maproulette-api ; \
+        git clone --depth 1 --branch ${VERSION} https://github.com/${GIT}.git /maproulette ; \
     fi
 
-WORKDIR /maproulette-api
+WORKDIR /maproulette
+ENV NODE_OPTIONS="--max-old-space-size=4096"
 RUN \
     echo "\n\nBUILDING API VERSION=${VERSION} COMMIT=$(git rev-parse HEAD)\n\n" && \
-    sbt evicted && \
-    sbt clean compile dist && \
-    unzip -d / target/universal/MapRouletteAPI.zip
+    npm ci && \
+    npm run build -w backend
 
-FROM docker.io/library/eclipse-temurin:${TEMURIN_JDK_TAG}
+FROM docker.io/library/node:${NODE_TAG}
 
-# Runtime image needs to have the most up-to-date patches
 RUN \
     apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get upgrade -y && \
+    apt-get install --no-install-recommends -y postgresql-client && \
     rm -rf /var/lib/apt/lists/*
+
 RUN \
     groupadd -g 1001 maproulette && \
-    useradd --uid 1001 --gid 1001 --groups 0 --create-home --home-dir /MapRouletteAPI maproulette && \
-    chmod 0775 /MapRouletteAPI && \
-    chown -R 1001:0 /MapRouletteAPI
+    useradd --uid 1001 --gid 1001 --groups 0 --create-home --home-dir /home/maproulette maproulette && \
+    mkdir -p /app && \
+    chown -R 1001:0 /app
 
-COPY --from=builder --chown=1001:0 /MapRouletteAPI /MapRouletteAPI
 USER maproulette
-WORKDIR /MapRouletteAPI
+WORKDIR /app
 
-COPY --chown=1001:0 setupServer.sh /MapRouletteAPI/setupServer.sh
-COPY --chown=1001:0 application-overrides.conf /MapRouletteAPI/conf/application-overrides.conf
+COPY --from=builder --chown=1001:0 /maproulette/package.json /maproulette/package-lock.json /app/
+COPY --from=builder --chown=1001:0 /maproulette/shared /app/shared
+COPY --from=builder --chown=1001:0 /maproulette/backend/package.json /app/backend/package.json
+COPY --from=builder --chown=1001:0 /maproulette/backend/dist /app/backend/dist
+COPY --from=builder --chown=1001:0 /maproulette/backend/drizzle /app/backend/drizzle
+COPY --from=builder --chown=1001:0 /maproulette/backend/drizzle.config.ts /app/backend/drizzle.config.ts
+COPY --from=builder --chown=1001:0 /maproulette/node_modules /app/node_modules
+COPY --from=builder --chown=1001:0 /maproulette/backend/node_modules /app/backend/node_modules
+
+COPY --chown=1001:0 setupServer.sh /app/backend/setupServer.sh
+
+WORKDIR /app/backend
+
+ENV PORT=9000
+EXPOSE 9000
 
 ENTRYPOINT ["./setupServer.sh"]
