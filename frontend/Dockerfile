@@ -2,9 +2,10 @@ ARG NODE_TAG=22-bullseye
 ARG NGINX_TAG=1.25-alpine
 FROM docker.io/library/node:${NODE_TAG} as builder
 
-ARG GIT="maproulette/maproulette3"
+ARG GIT="maproulette/maproulette4"
 ARG CACHEBUST=2
 ARG VERSION="LATEST"
+ARG GITHUB_TOKEN=""
 
 RUN \
     apt-get update && \
@@ -20,9 +21,9 @@ RUN \
     echo "${CACHEBUST}" && \
     echo "${VERSION}" && \
     if [ "${VERSION}" = "LATEST" ]; then \
-        git clone --depth 1 https://github.com/${GIT}.git /maproulette-frontend ; \
+        git clone --depth 1 https://${GITHUB_TOKEN}@github.com/${GIT}.git /maproulette-frontend ; \
     else \
-        git clone --depth 1 --branch ${VERSION} https://github.com/${GIT}.git /maproulette-frontend ; \
+        git clone --depth 1 --branch ${VERSION} https://${GITHUB_TOKEN}@github.com/${GIT}.git /maproulette-frontend ; \
     fi
 WORKDIR /maproulette-frontend
 
