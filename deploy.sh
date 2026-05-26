@@ -42,7 +42,7 @@ frontend=${frontend:-false}
 frontendRelease=${frontendRelease:-LATEST}
 
 # The Git location for the frontend
-frontendGit=${frontendGit:-"git:maproulette/maproulette3"}
+frontendGit=${frontendGit:-"git:maproulette/maproulette4"}
 
 # Whether to deploy the API
 api=${api:-false}
