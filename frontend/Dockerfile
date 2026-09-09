@@ -1,6 +1,6 @@
-ARG NODE_TAG=22-bullseye
+ARG NODE_TAG=22-bookworm
 ARG NGINX_TAG=1.25-alpine
-FROM docker.io/library/node:${NODE_TAG} as builder
+FROM docker.io/library/node:${NODE_TAG} AS builder
 
 ARG GIT="maproulette/maproulette3"
 ARG CACHEBUST=2
@@ -10,9 +10,7 @@ RUN \
     apt-get update && \
     apt-get install --no-install-recommends -y \
         jq \
-        python2 \
     && \
-    ln -sf /usr/bin/python2 /usr/bin/python && \
     rm -rf /var/lib/apt/lists/*
 
 RUN \
